@@ -1,14 +1,13 @@
 # Aave V3.0 Deployment Scripts
 
-This directory contains the deployment scripts for Aave V3.0 protocol on HyperEVM Testnet.
+This directory contains the modular deployment scripts for Aave V3.0 protocol. These scripts work on any EVM network and are designed for both testnet and mainnet deployments.
 
 ## Prerequisites
 
 1. **Environment Setup**: Ensure your `.env` file is properly configured:
    ```env
    PRIVATE_KEY=0xyour_private_key_with_0x_prefix
-   HYPEREVM_TESTNET_RPC_URL=https://rpc.hyperliquid-testnet.xyz/evm
-   HYPEREVM_TESTNET_CHAIN_ID=998
+   RPC_URL=https://your-network-rpc-url
    ```
 
 2. **Dependencies**: Run the deployment readiness check:
@@ -18,68 +17,65 @@ This directory contains the deployment scripts for Aave V3.0 protocol on HyperEV
 
 3. **Sufficient Balance**: Ensure your deployer wallet has sufficient ETH for gas fees (recommended: 2+ ETH).
 
-## Deployment Order
+## Deployment Architecture
 
-Deploy the contracts in the following order:
+The deployment is broken into **9 modular steps** to handle network transaction size limits and provide better control:
 
-### 1. Core Contracts
+### Step-by-Step Deployment
+
+#### 1. PoolAddressesProvider
 ```bash
-forge script script/deploy/01_DeployCoreContracts.s.sol:DeployCoreContracts \
-  --rpc-url $HYPEREVM_TESTNET_RPC_URL \
-  --broadcast \
-  --verify \
-  -vvvv
+forge script script/deploy/01_DeployCoreContracts.s.sol:DeployCoreContracts --rpc-url $RPC_URL --broadcast
 ```
+**Deploys:** PoolAddressesProvider (the registry for all protocol contracts)
 
-**Deploys:**
-- PoolAddressesProvider
-- PoolAddressesProviderRegistry  
-- Pool (implementation)
-- PoolConfigurator (implementation)
-- ACLManager
-- AaveOracle
-- AaveProtocolDataProvider
-
-### 2. Token Implementations
+#### 2. Registry
 ```bash
-forge script script/deploy/02_DeployTokenImplementations.s.sol:DeployTokenImplementations \
-  --rpc-url $HYPEREVM_TESTNET_RPC_URL \
-  --broadcast \
-  --verify \
-  -vvvv
+forge script script/deploy/02_DeployRegistry.s.sol:DeployRegistry --rpc-url $RPC_URL --broadcast
 ```
+**Deploys:** PoolAddressesProviderRegistry and registers the provider
 
-**Deploys:**
-- AToken implementation
-- StableDebtToken implementation
-- VariableDebtToken implementation
-
-### 3. Interest Rate Strategies
+#### 3. ACL Manager
 ```bash
-forge script script/deploy/03_DeployInterestRateStrategy.s.sol:DeployInterestRateStrategy \
-  --rpc-url $HYPEREVM_TESTNET_RPC_URL \
-  --broadcast \
-  --verify \
-  -vvvv
+forge script script/deploy/03_DeployACL.s.sol:DeployACL --rpc-url $RPC_URL --broadcast
 ```
+**Deploys:** Sets ACL Admin and deploys ACLManager
 
-**Deploys:**
-- Default Interest Rate Strategy (for ETH, major crypto)
-- Stablecoin Interest Rate Strategy (for USDC, USDT, DAI)
-- Volatile Asset Interest Rate Strategy (for altcoins)
-
-### 4. Mock Tokens (Optional - For Testing)
+#### 4. Pool Implementations
 ```bash
-forge script script/deploy/04_DeployMockTokens.s.sol:DeployMockTokens \
-  --rpc-url $HYPEREVM_TESTNET_RPC_URL \
-  --broadcast \
-  --verify \
-  -vvvv
+forge script script/deploy/04_DeployPool.s.sol:DeployPool --rpc-url $RPC_URL --broadcast
 ```
+**Deploys:** Pool and PoolConfigurator implementation contracts
 
-**Deploys:**
-- Mock USDC, USDT, DAI, WBTC, LINK, UNI tokens
-- Mints initial supply to deployer for testing
+#### 5. Oracle & Data Provider
+```bash
+forge script script/deploy/05_DeployOracle.s.sol:DeployOracle --rpc-url $RPC_URL --broadcast
+```
+**Deploys:** AaveOracle and AaveProtocolDataProvider
+
+#### 6. Setup Admin Roles
+```bash
+forge script script/deploy/06_SetupRoles.s.sol:SetupRoles --rpc-url $RPC_URL --broadcast
+```
+**Configures:** Initial admin roles (Pool Admin, Emergency Admin, Asset Listing Admin)
+
+#### 7. Token Implementations
+```bash
+forge script script/deploy/07_DeployTokenImplementations.s.sol:DeployTokenImplementations --rpc-url $RPC_URL --broadcast
+```
+**Deploys:** AToken, StableDebtToken, and VariableDebtToken implementations
+
+#### 8. Interest Rate Strategies
+```bash
+forge script script/deploy/08_DeployInterestRateStrategy.s.sol:DeployInterestRateStrategy --rpc-url $RPC_URL --broadcast
+```
+**Deploys:** Default, Stablecoin, and Volatile asset interest rate strategies
+
+#### 9. Mock Tokens (Optional - Testnet Only)
+```bash
+forge script script/deploy/09_DeployMockTokens.s.sol:DeployMockTokens --rpc-url $RPC_URL --broadcast
+```
+**Deploys:** Mock ERC20 tokens (USDC, USDT, DAI, WBTC, LINK, UNI) for testing
 
 ## Deployment Output
 

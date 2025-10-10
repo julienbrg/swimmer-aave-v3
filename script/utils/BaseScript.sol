@@ -44,7 +44,7 @@ abstract contract BaseScript is Script {
         }
     }
 
-    function logSeparator(string memory title) internal view {
+    function logSeparator(string memory title) internal pure {
         console.log("\n================================");
         console.log(title);
         console.log("================================");

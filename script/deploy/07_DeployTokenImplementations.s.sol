@@ -9,15 +9,16 @@ import {AToken} from "aave-v3-core/contracts/protocol/tokenization/AToken.sol";
 import {StableDebtToken} from "aave-v3-core/contracts/protocol/tokenization/StableDebtToken.sol";
 import {VariableDebtToken} from "aave-v3-core/contracts/protocol/tokenization/VariableDebtToken.sol";
 import {IPool} from "aave-v3-core/contracts/interfaces/IPool.sol";
+import {IPoolAddressesProvider} from "aave-v3-core/contracts/interfaces/IPoolAddressesProvider.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";
 import {Constants} from "../utils/Constants.sol";
 
 /**
- * @title Deploy Token Implementations
+ * @title Deploy Token Implementations - Step 7
  * @notice Deploys the token implementation contracts (AToken, StableDebtToken, VariableDebtToken)
- * @dev Run with: forge script script/deploy/02_DeployTokenImplementations.s.sol:DeployTokenImplementations --rpc-url $HYPEREVM_TESTNET_RPC_URL --broadcast -vvvv
+ * @dev Run with: forge script script/deploy/07_DeployTokenImplementations.s.sol:DeployTokenImplementations --rpc-url $RPC_URL --broadcast
  */
 contract DeployTokenImplementations is BaseScript {
     struct TokenImplementations {
@@ -56,19 +57,35 @@ contract DeployTokenImplementations is BaseScript {
         internal
         returns (TokenImplementations memory tokens)
     {
+        // Get the Pool proxy address from the PoolAddressesProvider
+        IPoolAddressesProvider provider = IPoolAddressesProvider(poolAddressesProvider);
+        address poolProxyAddress = provider.getPool();
+        
+        if (poolProxyAddress == address(0)) {
+            // Pool proxy not created yet, use Pool implementation from deployment file
+            string memory deploymentJson = loadDeployment();
+            poolProxyAddress = vm.parseJsonAddress(deploymentJson, ".pool");
+            console.log("Using Pool implementation:", poolProxyAddress);
+        } else {
+            console.log("Using Pool proxy:", poolProxyAddress);
+        }
+        
+        require(poolProxyAddress != address(0), "Pool not found in deployment or provider");
+        IPool pool = IPool(poolProxyAddress);
+
         // 1. Deploy AToken implementation
         console.log("\n1. Deploying AToken implementation...");
-        tokens.aTokenImpl = address(new AToken(IPool(poolAddressesProvider)));
+        tokens.aTokenImpl = address(new AToken(pool));
         console.log("   AToken implementation deployed:", tokens.aTokenImpl);
 
         // 2. Deploy StableDebtToken implementation
         console.log("\n2. Deploying StableDebtToken implementation...");
-        tokens.stableDebtTokenImpl = address(new StableDebtToken(IPool(poolAddressesProvider)));
+        tokens.stableDebtTokenImpl = address(new StableDebtToken(pool));
         console.log("   StableDebtToken implementation deployed:", tokens.stableDebtTokenImpl);
 
         // 3. Deploy VariableDebtToken implementation
         console.log("\n3. Deploying VariableDebtToken implementation...");
-        tokens.variableDebtTokenImpl = address(new VariableDebtToken(IPool(poolAddressesProvider)));
+        tokens.variableDebtTokenImpl = address(new VariableDebtToken(pool));
         console.log("   VariableDebtToken implementation deployed:", tokens.variableDebtTokenImpl);
 
         console.log("\nAll token implementations deployed!");
