@@ -5,10 +5,10 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {PoolAddressesProvider} from "aave-v3-core/contracts/protocol/configuration/PoolAddressesProvider.sol";
-import {PoolConfigurator} from "aave-v3-core/contracts/protocol/pool/PoolConfigurator.sol";
-import {IPoolConfigurator} from "aave-v3-core/contracts/interfaces/IPoolConfigurator.sol";
-import {ConfiguratorInputTypes} from "aave-v3-core/contracts/protocol/libraries/types/ConfiguratorInputTypes.sol";
+import {PoolAddressesProvider} from "../../src/protocol/configuration/PoolAddressesProvider.sol";
+import {PoolConfigurator} from "../../src/protocol/pool/PoolConfigurator.sol";
+import {IPoolConfigurator} from "../../src/interfaces/IPoolConfigurator.sol";
+import {ConfiguratorInputTypes} from "../../src/protocol/libraries/types/ConfiguratorInputTypes.sol";
 // Mock imports
 import {MintableERC20} from "../../src/mocks/tokens/MintableERC20.sol";
 

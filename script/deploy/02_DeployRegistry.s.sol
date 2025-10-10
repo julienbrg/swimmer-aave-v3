@@ -5,8 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {PoolAddressesProviderRegistry} from
-    "aave-v3-core/contracts/protocol/configuration/PoolAddressesProviderRegistry.sol";
+import {PoolAddressesProviderRegistry} from "../../src/protocol/configuration/PoolAddressesProviderRegistry.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";

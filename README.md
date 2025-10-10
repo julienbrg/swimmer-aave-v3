@@ -7,9 +7,6 @@
 First, install the required libraries:
 
 ```shell
-# Install Aave V3 Core contracts
-forge install aave/aave-v3-core --no-commit
-
 # Install OpenZeppelin contracts
 forge install OpenZeppelin/openzeppelin-contracts --no-commit
 

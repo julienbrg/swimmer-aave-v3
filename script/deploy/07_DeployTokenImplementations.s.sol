@@ -5,11 +5,11 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {AToken} from "aave-v3-core/contracts/protocol/tokenization/AToken.sol";
-import {StableDebtToken} from "aave-v3-core/contracts/protocol/tokenization/StableDebtToken.sol";
-import {VariableDebtToken} from "aave-v3-core/contracts/protocol/tokenization/VariableDebtToken.sol";
-import {IPool} from "aave-v3-core/contracts/interfaces/IPool.sol";
-import {IPoolAddressesProvider} from "aave-v3-core/contracts/interfaces/IPoolAddressesProvider.sol";
+import {AToken} from "../../src/protocol/tokenization/AToken.sol";
+import {StableDebtToken} from "../../src/protocol/tokenization/StableDebtToken.sol";
+import {VariableDebtToken} from "../../src/protocol/tokenization/VariableDebtToken.sol";
+import {IPool} from "../../src/interfaces/IPool.sol";
+import {IPoolAddressesProvider} from "../../src/interfaces/IPoolAddressesProvider.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";

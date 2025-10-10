@@ -12,41 +12,41 @@
 
 | Contract | Type | Address | ABI Location |
 |----------|------|---------|--------------|
-| **Pool (Main Entry)** | Proxy | `0xd029e2017a76dCA2D2DD354A2A92FBce7e5D2074` | `lib/aave-v3-core/contracts/interfaces/IPool.sol` |
-| **PoolConfigurator** | Proxy | `0x3C84e78f59796D1Fe182D606Ce0A95b93d5f73DA` | `lib/aave-v3-core/contracts/interfaces/IPoolConfigurator.sol` |
-| **PoolAddressesProvider** | Implementation | `0x97b1E699Fe1E9Ae1e43f2b9845b9233373a4b3dC` | `lib/aave-v3-core/contracts/protocol/configuration/PoolAddressesProvider.sol` |
+| **Pool (Main Entry)** | Proxy | `0xd029e2017a76dCA2D2DD354A2A92FBce7e5D2074` | `src/interfaces/IPool.sol` |
+| **PoolConfigurator** | Proxy | `0x3C84e78f59796D1Fe182D606Ce0A95b93d5f73DA` | `src/interfaces/IPoolConfigurator.sol` |
+| **PoolAddressesProvider** | Implementation | `0x97b1E699Fe1E9Ae1e43f2b9845b9233373a4b3dC` | `src/protocol/configuration/PoolAddressesProvider.sol` |
 
 ### Core Infrastructure
 
 | Contract | Type | Address | ABI Location |
 |----------|------|---------|--------------|
-| **PoolAddressesProviderRegistry** | Implementation | `0x476270053811a993E5D33a31aC97fbA912BD7559` | `lib/aave-v3-core/contracts/protocol/configuration/PoolAddressesProviderRegistry.sol` |
-| **ACLManager** | Implementation | `0xd85120Dd1f1eD7957930363F5E668ef6Edfc4905` | `lib/aave-v3-core/contracts/protocol/configuration/ACLManager.sol` |
-| **AaveOracle** | Implementation | `0x4A3F56F843EE5C3812fd2751C49aDEf95e544DD2` | `lib/aave-v3-core/contracts/misc/AaveOracle.sol` |
-| **AaveProtocolDataProvider** | Implementation | `0x8A5EBDf0031ED72Eb381e4607894aea7038e94D3` | `lib/aave-v3-core/contracts/misc/AaveProtocolDataProvider.sol` |
+| **PoolAddressesProviderRegistry** | Implementation | `0x476270053811a993E5D33a31aC97fbA912BD7559` | `src/protocol/configuration/PoolAddressesProviderRegistry.sol` |
+| **ACLManager** | Implementation | `0xd85120Dd1f1eD7957930363F5E668ef6Edfc4905` | `src/protocol/configuration/ACLManager.sol` |
+| **AaveOracle** | Implementation | `0x4A3F56F843EE5C3812fd2751C49aDEf95e544DD2` | `src/misc/AaveOracle.sol` |
+| **AaveProtocolDataProvider** | Implementation | `0x8A5EBDf0031ED72Eb381e4607894aea7038e94D3` | `src/misc/AaveProtocolDataProvider.sol` |
 
 ### Implementation Contracts
 
 | Contract | Type | Address | ABI Location |
 |----------|------|---------|--------------|
-| **Pool Implementation** | Implementation | `0xe1D5159242038e193015a49890f324a38A75AF04` | `lib/aave-v3-core/contracts/protocol/pool/Pool.sol` |
-| **PoolConfigurator Implementation** | Implementation | `0x5Af8c85E111D4A17C5B568Dd20a33b740070f0E2` | `lib/aave-v3-core/contracts/protocol/pool/PoolConfigurator.sol` |
+| **Pool Implementation** | Implementation | `0xe1D5159242038e193015a49890f324a38A75AF04` | `src/protocol/pool/Pool.sol` |
+| **PoolConfigurator Implementation** | Implementation | `0x5Af8c85E111D4A17C5B568Dd20a33b740070f0E2` | `src/protocol/pool/PoolConfigurator.sol` |
 
 ## 🪙 Token Implementations
 
 | Contract | Address | ABI Location |
 |----------|---------|--------------|
-| **AToken Implementation** | `0x0dbcd5B405B1128bF06E75F937f600ea53D76076` | `lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol` |
-| **StableDebtToken Implementation** | `0x84B14AA9b21FA45deD2A5C83990e8769D4df5073` | `lib/aave-v3-core/contracts/protocol/tokenization/StableDebtToken.sol` |
-| **VariableDebtToken Implementation** | `0xf2c8b78278B48A9c91b39C86D3990228cEaC5aC0` | `lib/aave-v3-core/contracts/protocol/tokenization/VariableDebtToken.sol` |
+| **AToken Implementation** | `0x0dbcd5B405B1128bF06E75F937f600ea53D76076` | `src/protocol/tokenization/AToken.sol` |
+| **StableDebtToken Implementation** | `0x84B14AA9b21FA45deD2A5C83990e8769D4df5073` | `src/protocol/tokenization/StableDebtToken.sol` |
+| **VariableDebtToken Implementation** | `0xf2c8b78278B48A9c91b39C86D3990228cEaC5aC0` | `src/protocol/tokenization/VariableDebtToken.sol` |
 
 ## 📈 Interest Rate Strategies
 
 | Strategy | Address | ABI Location |
 |----------|---------|--------------|
-| **Default Strategy** | `0x60471ABd262E2388e90FbE1f676ed0C762C39a09` | `lib/aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
-| **Stablecoin Strategy** | `0xa89cc87b458c0C89c8842E44441093d330EfF40F` | `lib/aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
-| **Volatile Asset Strategy** | `0xD4d76e84E1B0EA4eba09bEE40D06C6cfB89B7cBE` | `lib/aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
+| **Default Strategy** | `0x60471ABd262E2388e90FbE1f676ed0C762C39a09` | `src/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
+| **Stablecoin Strategy** | `0xa89cc87b458c0C89c8842E44441093d330EfF40F` | `src/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
+| **Volatile Asset Strategy** | `0xD4d76e84E1B0EA4eba09bEE40D06C6cfB89B7cBE` | `src/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
 
 ### Strategy Parameters
 
@@ -60,12 +60,12 @@
 
 | Token | Symbol | Address | Decimals | ABI Location |
 |-------|--------|---------|----------|--------------|
-| **Mock USD Coin** | USDC | `0x83C0F8D4e46E5B81461aC0133B635f57745b464E` | 6 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Tether USD** | USDT | `0xEc048DA076f171BcCac90F1CE888FcabC10c6c4b` | 6 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Dai Stablecoin** | DAI | `0x610a2f01C74357dcf2117CdFBB07736FEb145167` | 18 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Wrapped Bitcoin** | WBTC | `0x63944467f67da637a703A7F3C13F748F3C10958A` | 8 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Chainlink** | LINK | `0xB191D82173471ec22098e35CC19C5621861555Cf` | 18 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Uniswap** | UNI | `0x7BdBa9B1C27343D105FA39A9c34c340d7549AccB` | 18 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
+| **Mock USD Coin** | USDC | `0x83C0F8D4e46E5B81461aC0133B635f57745b464E` | 6 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Tether USD** | USDT | `0xEc048DA076f171BcCac90F1CE888FcabC10c6c4b` | 6 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Dai Stablecoin** | DAI | `0x610a2f01C74357dcf2117CdFBB07736FEb145167` | 18 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Wrapped Bitcoin** | WBTC | `0x63944467f67da637a703A7F3C13F748F3C10958A` | 8 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Chainlink** | LINK | `0xB191D82173471ec22098e35CC19C5621861555Cf` | 18 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Uniswap** | UNI | `0x7BdBa9B1C27343D105FA39A9c34c340d7549AccB` | 18 | `src/mocks/tokens/MintableERC20.sol` |
 
 ## 🏦 Active Reserves
 
@@ -73,9 +73,9 @@
 
 | Token Type | Address | ABI Location |
 |------------|---------|--------------|
-| **aUSDC** | `0x85fd9D3a818ad4659d5F28616afd37Fe388a63B1` | `lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol` |
-| **Stable Debt USDC** | `0xdD4C652f1b6791eEeeBda1606EE46A277cb6F520` | `lib/aave-v3-core/contracts/protocol/tokenization/StableDebtToken.sol` |
-| **Variable Debt USDC** | `0xf3a71fe73C1CF34287BA622156B255914a7e3f07` | `lib/aave-v3-core/contracts/protocol/tokenization/VariableDebtToken.sol` |
+| **aUSDC** | `0x85fd9D3a818ad4659d5F28616afd37Fe388a63B1` | `src/protocol/tokenization/AToken.sol` |
+| **Stable Debt USDC** | `0xdD4C652f1b6791eEeeBda1606EE46A277cb6F520` | `src/protocol/tokenization/StableDebtToken.sol` |
+| **Variable Debt USDC** | `0xf3a71fe73C1CF34287BA622156B255914a7e3f07` | `src/protocol/tokenization/VariableDebtToken.sol` |
 
 **Reserve Configuration:**
 - **Underlying Asset**: Mock USD Coin (USDC)
