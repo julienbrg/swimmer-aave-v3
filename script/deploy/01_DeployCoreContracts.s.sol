@@ -42,5 +42,4 @@ contract DeployCoreContracts is BaseScript {
         console.log("PoolAddressesProvider deployed at:", address(provider));
         logSeparator("STEP 1 COMPLETED - RUN STEP 2 NEXT");
     }
-
 }

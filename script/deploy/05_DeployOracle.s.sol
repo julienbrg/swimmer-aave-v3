@@ -30,26 +30,27 @@ contract DeployOracle is BaseScript {
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
 
         startBroadcastWithInfo();
-        
+
         // Deploy AaveOracle (initially with empty assets)
         AaveOracle oracle = new AaveOracle(
             IPoolAddressesProvider(poolAddressesProvider),
             new address[](0), // Empty assets array initially
-            new address[](0), // Empty sources array initially  
+            new address[](0), // Empty sources array initially
             address(0), // No fallback oracle
             Constants.BASE_CURRENCY,
             Constants.BASE_CURRENCY_UNIT
         );
         console.log("AaveOracle deployed at:", address(oracle));
-        
+
         // Deploy AaveProtocolDataProvider
-        AaveProtocolDataProvider dataProvider = new AaveProtocolDataProvider(IPoolAddressesProvider(poolAddressesProvider));
+        AaveProtocolDataProvider dataProvider =
+            new AaveProtocolDataProvider(IPoolAddressesProvider(poolAddressesProvider));
         console.log("AaveProtocolDataProvider deployed at:", address(dataProvider));
-        
+
         // Set oracle in provider
         PoolAddressesProvider provider = PoolAddressesProvider(poolAddressesProvider);
         provider.setPriceOracle(address(oracle));
-        
+
         stopBroadcastWithInfo();
 
         verifyAddress(address(oracle), "AaveOracle");

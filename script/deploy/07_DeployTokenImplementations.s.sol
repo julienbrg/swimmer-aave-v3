@@ -60,7 +60,7 @@ contract DeployTokenImplementations is BaseScript {
         // Get the Pool proxy address from the PoolAddressesProvider
         IPoolAddressesProvider provider = IPoolAddressesProvider(poolAddressesProvider);
         address poolProxyAddress = provider.getPool();
-        
+
         if (poolProxyAddress == address(0)) {
             // Pool proxy not created yet, use Pool implementation from deployment file
             string memory deploymentJson = loadDeployment();
@@ -69,7 +69,7 @@ contract DeployTokenImplementations is BaseScript {
         } else {
             console.log("Using Pool proxy:", poolProxyAddress);
         }
-        
+
         require(poolProxyAddress != address(0), "Pool not found in deployment or provider");
         IPool pool = IPool(poolProxyAddress);
 

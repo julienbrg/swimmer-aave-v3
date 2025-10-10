@@ -30,20 +30,20 @@ contract SetupRoles is BaseScript {
         console.log("Setting up roles for:", deployer);
 
         startBroadcastWithInfo();
-        
+
         ACLManager manager = ACLManager(aclManager);
-        
+
         // Add deployer as initial admin roles
         // NOTE: In production, these should be changed to multisig/governance contracts
         manager.addPoolAdmin(deployer);
         console.log("Pool Admin set:", deployer);
-        
+
         manager.addEmergencyAdmin(deployer);
         console.log("Emergency Admin set:", deployer);
-        
+
         manager.addAssetListingAdmin(deployer);
         console.log("Asset Listing Admin set:", deployer);
-        
+
         stopBroadcastWithInfo();
 
         // Update deployment file

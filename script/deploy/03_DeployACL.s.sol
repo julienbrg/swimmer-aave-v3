@@ -31,28 +31,28 @@ contract DeployACL is BaseScript {
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
 
         PoolAddressesProvider provider = PoolAddressesProvider(poolAddressesProvider);
-        
+
         // Verify deployer is owner
         address currentOwner = provider.owner();
         console.log("Current provider owner:", currentOwner);
         require(currentOwner == deployer, "Deployer is not the owner of PoolAddressesProvider");
-        
+
         startBroadcastWithInfo();
-        
+
         // First, set ACL Admin (required before ACLManager deployment)
         console.log("Setting ACL Admin to deployer...");
         provider.setACLAdmin(deployer);
         console.log("ACL Admin set to:", deployer);
-        
+
         // Deploy ACL Manager (reads ACL admin from provider)
         console.log("Deploying ACLManager...");
         ACLManager aclManager = new ACLManager(IPoolAddressesProvider(poolAddressesProvider));
         console.log("ACLManager deployed at:", address(aclManager));
-        
+
         // Set ACLManager in provider
         provider.setACLManager(address(aclManager));
         console.log("ACLManager set in provider");
-        
+
         stopBroadcastWithInfo();
 
         verifyAddress(address(aclManager), "ACLManager");

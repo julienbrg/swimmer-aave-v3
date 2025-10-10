@@ -29,27 +29,27 @@ contract DeployPool is BaseScript {
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
 
         startBroadcastWithInfo();
-        
+
         // Deploy Pool implementation
         Pool pool = new Pool(IPoolAddressesProvider(poolAddressesProvider));
         console.log("Pool implementation deployed at:", address(pool));
-        
+
         // Deploy PoolConfigurator implementation
         PoolConfigurator configurator = new PoolConfigurator();
         console.log("PoolConfigurator implementation deployed at:", address(configurator));
-        
+
         // Set implementations in provider
         PoolAddressesProvider provider = PoolAddressesProvider(poolAddressesProvider);
         provider.setPoolImpl(address(pool));
         provider.setPoolConfiguratorImpl(address(configurator));
         console.log("Pool implementations set in provider");
-        
+
         // Verify proxies were created
         address poolProxy = provider.getPool();
         address configProxy = provider.getPoolConfigurator();
         console.log("Pool Proxy created at:", poolProxy);
         console.log("PoolConfigurator Proxy created at:", configProxy);
-        
+
         stopBroadcastWithInfo();
 
         verifyAddress(address(pool), "Pool Implementation");
@@ -62,7 +62,7 @@ contract DeployPool is BaseScript {
         console.log("PoolConfigurator Implementation:", address(configurator));
         console.log("Pool Proxy:                ", poolProxy);
         console.log("PoolConfigurator Proxy:    ", configProxy);
-        
+
         logSeparator("STEP 4 COMPLETED - PROXIES CREATED");
     }
 }
