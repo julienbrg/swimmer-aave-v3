@@ -7,6 +7,6 @@ evm_version = "cancun"
 optimizer = true
 optimizer_runs = 200
 auto_detect_solc = false
-fs_permissions = [{ access = "read-write", path = "./deployments" }]
+fs_permissions = [{ access = "read-write", path = "./deployments" }, { access = "read", path = "./broadcast" }]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

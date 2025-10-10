@@ -18,10 +18,9 @@ import {BaseScript} from "../utils/BaseScript.sol";
  */
 contract DeployRegistry is BaseScript {
     function run() external {
-        // Load existing deployment
-        string memory existingJson = loadDeployment();
-        address poolAddressesProvider = vm.parseJsonAddress(existingJson, ".poolAddressesProvider");
-        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found in deployment file");
+        // Get PoolAddressesProvider from previous step's broadcast
+        address poolAddressesProvider = _getPoolAddressesProvider();
+        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found in broadcast files");
 
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
@@ -41,13 +40,24 @@ contract DeployRegistry is BaseScript {
 
         verifyAddress(address(registry), "PoolAddressesProviderRegistry");
 
-        // Update deployment file
-        string memory json = vm.serializeAddress("deployment", "poolAddressesProviderRegistry", address(registry));
-        string memory finalJson = vm.serializeString(json, "step2", "completed");
-        saveDeployment(finalJson);
+        // Contract addresses are automatically saved to broadcast files
 
         console.log("Registry deployed at:", address(registry));
         console.log("Provider registered in registry");
         logSeparator("STEP 2 COMPLETED - RUN STEP 3 NEXT");
+    }
+
+    function _getPoolAddressesProvider() internal view override returns (address) {
+        string memory broadcastFile = string(abi.encodePacked("./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
+        
+        try vm.readFile(broadcastFile) returns (string memory json) {
+            try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
+                return contractAddr;
+            } catch {
+                return address(0);
+            }
+        } catch {
+            return address(0);
+        }
     }
 }

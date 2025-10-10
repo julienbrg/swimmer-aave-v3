@@ -31,13 +31,7 @@ contract DeployCoreContracts is BaseScript {
 
         verifyAddress(address(provider), "PoolAddressesProvider");
 
-        // Save to deployment file
-        string memory json = "deployment";
-        vm.serializeUint(json, "chainId", block.chainid);
-        vm.serializeString(json, "network", block.chainid == 998 ? "hyperevm-testnet" : "unknown");
-        vm.serializeUint(json, "timestamp", block.timestamp);
-        string memory finalJson = vm.serializeAddress(json, "poolAddressesProvider", address(provider));
-        saveDeployment(finalJson);
+        // Contract address is automatically saved to broadcast files
 
         console.log("PoolAddressesProvider deployed at:", address(provider));
         logSeparator("STEP 1 COMPLETED - RUN STEP 2 NEXT");

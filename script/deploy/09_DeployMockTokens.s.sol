@@ -29,8 +29,13 @@ contract DeployMockTokens is BaseScript {
     }
 
     function run() external {
-        // Verify we're on the correct network
-        require(block.chainid == Constants.CHAIN_ID, "Wrong network - expected HyperEVM Testnet");
+        // Check if already deployed
+        if (_hasBeenDeployed("09_DeployMockTokens.s.sol")) {
+            console.log("Mock tokens deployment already exists. Skipping deployment.");
+            return;
+        }
+
+        // Network check removed - script works on any network
 
         logSeparator("DEPLOYING MOCK TOKENS FOR TESTING");
         console.log("WARNING: These are mock tokens for testing only!");
@@ -119,17 +124,8 @@ contract DeployMockTokens is BaseScript {
     }
 
     function _saveDeployment(MockTokens memory mockTokens) internal {
-        // Create JSON with mock tokens
-        string memory tokensJson = "mockTokens";
-        for (uint256 i = 0; i < mockTokens.tokens.length; i++) {
-            MockToken memory token = mockTokens.tokens[i];
-            vm.serializeAddress(tokensJson, token.symbol, token.tokenAddress);
-        }
-        string memory finalJson =
-            vm.serializeAddress(tokensJson, "lastToken", mockTokens.tokens[mockTokens.tokens.length - 1].tokenAddress);
-
-        saveDeployment(finalJson);
-        console.log("Mock tokens added to deployment file");
+        // Contract addresses are automatically saved to broadcast files
+        console.log("Mock tokens deployed - addresses saved to broadcast files");
     }
 
     function _logDeploymentSummary(MockTokens memory mockTokens, address owner) internal view {

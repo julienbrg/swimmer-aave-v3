@@ -17,10 +17,15 @@ import {BaseScript} from "../utils/BaseScript.sol";
  */
 contract SetupRoles is BaseScript {
     function run() external {
-        // Load existing deployment
-        string memory existingJson = loadDeployment();
-        address aclManager = vm.parseJsonAddress(existingJson, ".aclManager");
-        require(aclManager != address(0), "ACLManager not found in deployment file");
+        // Check if already deployed
+        if (_hasBeenDeployed("06_SetupRoles.s.sol")) {
+            console.log("Roles setup already exists. Skipping setup.");
+            return;
+        }
+
+        // Get ACLManager from step 3's broadcast file
+        address aclManager = _getACLManager();
+        require(aclManager != address(0), "ACLManager not found. Run step 3 first.");
 
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
@@ -46,10 +51,7 @@ contract SetupRoles is BaseScript {
 
         stopBroadcastWithInfo();
 
-        // Update deployment file
-        string memory json = vm.serializeString("deployment", "step6", "completed");
-        string memory finalJson = vm.serializeString(json, "rolesSetup", "deployer-as-admin");
-        saveDeployment(finalJson);
+        // Contract addresses are automatically saved to broadcast files
 
         console.log("\nWARNING: In production, transfer admin roles to governance contracts!");
         logSeparator("CORE DEPLOYMENT COMPLETED");

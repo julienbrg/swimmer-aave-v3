@@ -42,25 +42,22 @@ contract ListUSDC is BaseScript {
     function run() external {
         console.log("=================================================");
         console.log("        LISTING USDC IN AAVE V3.0 PROTOCOL");
+        console.log("Network: Chain ID", block.chainid);
         console.log("=================================================");
 
-        // Verify we're on the correct network
-        require(block.chainid == Constants.CHAIN_ID, "Wrong network - expected HyperEVM Testnet");
+        // Network check removed - script works on any network
 
-        // Load deployment file
-        string memory deploymentJson = loadDeployment();
-        require(bytes(deploymentJson).length > 2, "No valid deployment data found");
+        // Load addresses from broadcast files
+        address poolAddressesProvider = _getPoolAddressesProviderFromBroadcast();
+        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found in broadcast files");
 
-        address poolAddressesProvider = vm.parseJsonAddress(deploymentJson, ".poolAddressesProvider");
-        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found");
-
-        address usdcToken = vm.parseJsonAddress(deploymentJson, ".mockTokens.USDC");
-        require(usdcToken != address(0), "USDC token not found in deployment");
+        address usdcToken = _getMockTokenFromBroadcast("USDC");
+        require(usdcToken != address(0), "USDC token not found in broadcast files");
 
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
         console.log("USDC Token Address:", usdcToken);
 
-        USDCConfig memory config = _prepareUSDCConfig(deploymentJson, usdcToken);
+        USDCConfig memory config = _prepareUSDCConfig(usdcToken);
 
         startBroadcastWithInfo();
         _listUSDCReserve(poolAddressesProvider, config);
@@ -73,19 +70,19 @@ contract ListUSDC is BaseScript {
         console.log("=================================================");
     }
 
-    function _prepareUSDCConfig(string memory deploymentJson, address usdcToken)
+    function _prepareUSDCConfig(address usdcToken)
         internal
         view
         returns (USDCConfig memory config)
     {
         console.log("\n1. PREPARING USDC CONFIGURATION...");
 
-        // Load required addresses
+        // Load required addresses from broadcast files
         config.asset = usdcToken;
-        config.aToken = vm.parseJsonAddress(deploymentJson, ".aTokenImpl");
-        config.stableDebtToken = vm.parseJsonAddress(deploymentJson, ".stableDebtTokenImpl");
-        config.variableDebtToken = vm.parseJsonAddress(deploymentJson, ".variableDebtTokenImpl");
-        config.interestRateStrategy = vm.parseJsonAddress(deploymentJson, ".stablecoinInterestRateStrategy");
+        config.aToken = _getContractFromBroadcast("07_DeployTokenImplementations.s.sol", 0); // AToken
+        config.stableDebtToken = _getContractFromBroadcast("07_DeployTokenImplementations.s.sol", 1); // StableDebtToken
+        config.variableDebtToken = _getContractFromBroadcast("07_DeployTokenImplementations.s.sol", 2); // VariableDebtToken
+        config.interestRateStrategy = _getContractFromBroadcast("08_DeployInterestRateStrategy.s.sol", 1); // Stablecoin strategy (transaction index 1)
 
         // Verify all required addresses are available
         require(config.aToken != address(0), "aToken implementation not found");
@@ -224,5 +221,63 @@ contract ListUSDC is BaseScript {
         console.log("   2. Test deposit/withdraw functionality");
         console.log("   3. Test borrow/repay functionality");
         console.log("   4. Monitor reserve utilization");
+    }
+
+    function _getPoolAddressesProviderFromBroadcast() internal view returns (address) {
+        string memory broadcastFile = string(abi.encodePacked("./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
+        
+        try vm.readFile(broadcastFile) returns (string memory json) {
+            try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
+                return contractAddr;
+            } catch {
+                return address(0);
+            }
+        } catch {
+            return address(0);
+        }
+    }
+
+    function _getMockTokenFromBroadcast(string memory tokenSymbol) internal view returns (address) {
+        string memory broadcastFile = string(abi.encodePacked("./broadcast/09_DeployMockTokens.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
+        
+        try vm.readFile(broadcastFile) returns (string memory json) {
+            // Mock tokens are deployed in a specific order: USDC, USDT, DAI, WBTC, LINK, UNI
+            uint256 tokenIndex = _getTokenIndex(tokenSymbol);
+            if (tokenIndex == type(uint256).max) return address(0);
+            
+            string memory path = string(abi.encodePacked(".transactions[", vm.toString(tokenIndex), "].contractAddress"));
+            try vm.parseJsonAddress(json, path) returns (address tokenAddr) {
+                return tokenAddr;
+            } catch {
+                return address(0);
+            }
+        } catch {
+            return address(0);
+        }
+    }
+
+    function _getContractFromBroadcast(string memory scriptName, uint256 transactionIndex) internal view override returns (address) {
+        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+        
+        try vm.readFile(broadcastFile) returns (string memory json) {
+            string memory path = string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
+            try vm.parseJsonAddress(json, path) returns (address contractAddr) {
+                return contractAddr;
+            } catch {
+                return address(0);
+            }
+        } catch {
+            return address(0);
+        }
+    }
+
+    function _getTokenIndex(string memory symbol) internal pure returns (uint256) {
+        if (keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("USDC"))) return 0;
+        if (keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("USDT"))) return 1;
+        if (keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("DAI"))) return 2;
+        if (keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("WBTC"))) return 3;
+        if (keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("LINK"))) return 4;
+        if (keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("UNI"))) return 5;
+        return type(uint256).max;
     }
 }

@@ -19,10 +19,19 @@ import {BaseScript} from "../utils/BaseScript.sol";
  */
 contract DeployACL is BaseScript {
     function run() external {
-        // Load existing deployment
-        string memory existingJson = loadDeployment();
-        address poolAddressesProvider = vm.parseJsonAddress(existingJson, ".poolAddressesProvider");
-        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found in deployment file");
+        // Check if already deployed
+        if (_hasBeenDeployed("03_DeployACL.s.sol")) {
+            console.log("ACL deployment already exists. Skipping deployment.");
+            address aclManager = _getACLManager();
+            if (aclManager != address(0)) {
+                console.log("Found existing ACLManager at:", aclManager);
+                return;
+            }
+        }
+
+        // Get PoolAddressesProvider from step 1's broadcast file
+        address poolAddressesProvider = _getPoolAddressesProvider();
+        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run step 1 first.");
 
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
@@ -57,10 +66,7 @@ contract DeployACL is BaseScript {
 
         verifyAddress(address(aclManager), "ACLManager");
 
-        // Update deployment file
-        string memory json = vm.serializeAddress("deployment", "aclManager", address(aclManager));
-        string memory finalJson = vm.serializeString(json, "step3", "completed");
-        saveDeployment(finalJson);
+        // Contract addresses are automatically saved to broadcast files
 
         console.log("ACLManager deployed at:", address(aclManager));
         console.log("ACLManager set in provider");

@@ -28,15 +28,17 @@ contract DeployTokenImplementations is BaseScript {
     }
 
     function run() external {
-        // Verify we're on the correct network
-        require(block.chainid == Constants.CHAIN_ID, "Wrong network - expected HyperEVM Testnet");
+        // Check if already deployed
+        if (_hasBeenDeployed("07_DeployTokenImplementations.s.sol")) {
+            console.log("Token implementations deployment already exists. Skipping deployment.");
+            return;
+        }
 
-        // Load existing deployment
-        string memory existingDeployment = loadDeployment();
-        address poolAddressesProvider = vm.parseJsonAddress(existingDeployment, ".poolAddressesProvider");
-        require(
-            poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run 01_DeployCoreContracts first."
-        );
+        // Network check removed - script works on any network
+
+        // Get PoolAddressesProvider from step 1's broadcast file
+        address poolAddressesProvider = _getPoolAddressesProvider();
+        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run step 1 first.");
 
         logSeparator("DEPLOYING TOKEN IMPLEMENTATIONS");
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
@@ -62,9 +64,8 @@ contract DeployTokenImplementations is BaseScript {
         address poolProxyAddress = provider.getPool();
 
         if (poolProxyAddress == address(0)) {
-            // Pool proxy not created yet, use Pool implementation from deployment file
-            string memory deploymentJson = loadDeployment();
-            poolProxyAddress = vm.parseJsonAddress(deploymentJson, ".pool");
+            // Pool proxy not created yet, use Pool implementation from step 4's broadcast file
+            poolProxyAddress = _getPoolImplementation();
             console.log("Using Pool implementation:", poolProxyAddress);
         } else {
             console.log("Using Pool proxy:", poolProxyAddress);
@@ -114,18 +115,8 @@ contract DeployTokenImplementations is BaseScript {
     }
 
     function _saveDeployment(TokenImplementations memory tokens) internal {
-        // Load and modify existing deployment
-        string memory existingJson = loadDeployment();
-
-        // Create new JSON with token implementations
-        string memory json = "deployment";
-        vm.serializeAddress(json, "aTokenImpl", tokens.aTokenImpl);
-        vm.serializeAddress(json, "stableDebtTokenImpl", tokens.stableDebtTokenImpl);
-        string memory tokensJson = vm.serializeAddress(json, "variableDebtTokenImpl", tokens.variableDebtTokenImpl);
-
-        // For now, just save token implementations. In production, would merge with existing JSON
-        saveDeployment(tokensJson);
-        console.log("Token implementations added to deployment file");
+        // Contract addresses are automatically saved to broadcast files
+        console.log("Token implementations deployed - addresses saved to broadcast files");
     }
 
     function _logDeploymentSummary(TokenImplementations memory tokens) internal view {

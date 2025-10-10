@@ -20,10 +20,21 @@ import {BaseScript} from "../utils/BaseScript.sol";
  */
 contract DeployPool is BaseScript {
     function run() external {
-        // Load existing deployment
-        string memory existingJson = loadDeployment();
-        address poolAddressesProvider = vm.parseJsonAddress(existingJson, ".poolAddressesProvider");
-        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found in deployment file");
+        // Check if already deployed
+        if (_hasBeenDeployed("04_DeployPool.s.sol")) {
+            console.log("Pool deployment already exists. Skipping deployment.");
+            address poolImpl = _getPoolImplementation();
+            address configImpl = _getPoolConfiguratorImplementation();
+            if (poolImpl != address(0) && configImpl != address(0)) {
+                console.log("Found existing Pool implementation at:", poolImpl);
+                console.log("Found existing PoolConfigurator implementation at:", configImpl);
+                return;
+            }
+        }
+
+        // Get PoolAddressesProvider from step 1's broadcast file
+        address poolAddressesProvider = _getPoolAddressesProvider();
+        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run step 1 first.");
 
         logSeparator("DEPLOYING POOL IMPLEMENTATIONS");
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);

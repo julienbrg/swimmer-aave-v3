@@ -38,15 +38,17 @@ contract DeployInterestRateStrategy is BaseScript {
     }
 
     function run() external {
-        // Verify we're on the correct network
-        require(block.chainid == Constants.CHAIN_ID, "Wrong network - expected HyperEVM Testnet");
+        // Check if already deployed
+        if (_hasBeenDeployed("08_DeployInterestRateStrategy.s.sol")) {
+            console.log("Interest rate strategies deployment already exists. Skipping deployment.");
+            return;
+        }
 
-        // Load existing deployment
-        string memory existingDeployment = loadDeployment();
-        address poolAddressesProvider = vm.parseJsonAddress(existingDeployment, ".poolAddressesProvider");
-        require(
-            poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run 01_DeployCoreContracts first."
-        );
+        // Network check removed - script works on any network
+
+        // Get PoolAddressesProvider from step 1's broadcast file
+        address poolAddressesProvider = _getPoolAddressesProvider();
+        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run step 1 first.");
 
         logSeparator("DEPLOYING INTEREST RATE STRATEGIES");
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
@@ -224,15 +226,8 @@ contract DeployInterestRateStrategy is BaseScript {
     }
 
     function _saveDeployment(InterestRateStrategies memory strategies) internal {
-        // Create JSON with interest rate strategies
-        string memory json = "deployment";
-        vm.serializeAddress(json, "defaultInterestRateStrategy", strategies.defaultStrategy);
-        vm.serializeAddress(json, "stablecoinInterestRateStrategy", strategies.stablecoinStrategy);
-        string memory strategiesJson =
-            vm.serializeAddress(json, "volatileAssetInterestRateStrategy", strategies.volatileAssetStrategy);
-
-        saveDeployment(strategiesJson);
-        console.log("Interest rate strategies added to deployment file");
+        // Contract addresses are automatically saved to broadcast files
+        console.log("Interest rate strategies deployed - addresses saved to broadcast files");
     }
 
     function _logDeploymentSummary(InterestRateStrategies memory strategies) internal view {

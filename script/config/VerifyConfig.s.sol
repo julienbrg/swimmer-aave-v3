@@ -56,19 +56,20 @@ contract VerifyConfig is BaseScript {
         console.log("    AAVE V3.0 CONFIGURATION VERIFICATION");
         console.log("=================================================");
 
-        // Verify we're on the correct network
-        require(block.chainid == Constants.CHAIN_ID, "Wrong network - expected HyperEVM Testnet");
-        console.log("Network: HyperEVM Testnet (Chain ID: 998)");
+        // Network check removed - script works on any network
+        console.log("Network: Chain ID", block.chainid);
 
-        // Load deployment file
-        string memory deploymentJson = loadDeployment();
-        if (bytes(deploymentJson).length <= 2) {
-            console.log("ERROR: No valid deployment data found.");
+        // Load addresses dynamically from broadcast files
+        DeploymentAddresses memory addresses = _loadAddressesFromBroadcast();
+        
+        if (addresses.poolAddressesProvider == address(0)) {
+            console.log("ERROR: PoolAddressesProvider not found in broadcast files.");
             console.log("Please run deployment scripts first.");
             return;
         }
-
-        DeploymentAddresses memory addresses = _loadAddresses(deploymentJson);
+        
+        // Load other addresses by querying the provider
+        _loadAddressesFromProvider(addresses);
         ConfigurationStatus memory status = _verifyConfiguration(addresses);
 
         _generateReport(status, addresses);
@@ -78,30 +79,110 @@ contract VerifyConfig is BaseScript {
         console.log("=================================================");
     }
 
-    function _loadAddresses(string memory json) internal pure returns (DeploymentAddresses memory addresses) {
-        addresses.poolAddressesProvider = vm.parseJsonAddress(json, ".poolAddressesProvider");
-        addresses.poolAddressesProviderRegistry = vm.parseJsonAddress(json, ".poolAddressesProviderRegistry");
-        addresses.aclManager = vm.parseJsonAddress(json, ".aclManager");
-        addresses.pool = vm.parseJsonAddress(json, ".pool");
-        addresses.poolConfigurator = vm.parseJsonAddress(json, ".poolConfigurator");
-
-        // Try to parse proxy addresses (may not exist in older deployments)
-        try vm.parseJsonAddress(json, ".poolProxy") returns (address poolProxy) {
+    function _loadAddressesFromProvider(DeploymentAddresses memory addresses) internal view {
+        if (addresses.poolAddressesProvider == address(0)) return;
+        
+        PoolAddressesProvider provider = PoolAddressesProvider(addresses.poolAddressesProvider);
+        
+        // Get addresses from the provider
+        try provider.getPool() returns (address poolProxy) {
             addresses.poolProxy = poolProxy;
         } catch {}
-
-        try vm.parseJsonAddress(json, ".poolConfiguratorProxy") returns (address poolConfiguratorProxy) {
-            addresses.poolConfiguratorProxy = poolConfiguratorProxy;
+        
+        try provider.getPoolConfigurator() returns (address configProxy) {
+            addresses.poolConfiguratorProxy = configProxy;
         } catch {}
+        
+        try provider.getACLManager() returns (address aclManager) {
+            addresses.aclManager = aclManager;
+        } catch {}
+        
+        try provider.getPriceOracle() returns (address oracle) {
+            addresses.oracle = oracle;
+        } catch {}
+        
+        // For token implementations and other contracts, we'll set them to address(0)
+        // since they're not directly accessible from the provider
+        // The verification will note these as not found, which is expected
+    }
 
-        addresses.oracle = vm.parseJsonAddress(json, ".oracle");
-        addresses.protocolDataProvider = vm.parseJsonAddress(json, ".protocolDataProvider");
-        addresses.aTokenImpl = vm.parseJsonAddress(json, ".aTokenImpl");
-        addresses.stableDebtTokenImpl = vm.parseJsonAddress(json, ".stableDebtTokenImpl");
-        addresses.variableDebtTokenImpl = vm.parseJsonAddress(json, ".variableDebtTokenImpl");
-        addresses.defaultInterestRateStrategy = vm.parseJsonAddress(json, ".defaultInterestRateStrategy");
-        addresses.stablecoinInterestRateStrategy = vm.parseJsonAddress(json, ".stablecoinInterestRateStrategy");
-        addresses.volatileAssetInterestRateStrategy = vm.parseJsonAddress(json, ".volatileAssetInterestRateStrategy");
+    function _loadAddressesFromBroadcast() internal view returns (DeploymentAddresses memory addresses) {
+        // Load PoolAddressesProvider from step 1
+        addresses.poolAddressesProvider = _loadContractFromBroadcast("01_DeployCoreContracts.s.sol", "PoolAddressesProvider");
+        
+        // Load ACL Manager from step 3
+        addresses.aclManager = _loadContractFromBroadcast("03_DeployACL.s.sol", "ACLManager");
+        
+        // Load Pool implementations from step 4
+        addresses.pool = _loadContractFromBroadcast("04_DeployPool.s.sol", "Pool");
+        addresses.poolConfigurator = _loadContractFromBroadcast("04_DeployPool.s.sol", "PoolConfigurator");
+        
+        // Load Oracle from step 5
+        addresses.oracle = _loadContractFromBroadcast("05_DeployOracle.s.sol", "AaveOracle");
+        
+        // Load token implementations from step 7
+        addresses.aTokenImpl = _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "AToken");
+        addresses.stableDebtTokenImpl = _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "StableDebtToken");
+        addresses.variableDebtTokenImpl = _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "VariableDebtToken");
+        
+        // Load interest rate strategies from step 8 (multiple strategies deployed in single script)
+        addresses.defaultInterestRateStrategy = _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 0);
+        addresses.stablecoinInterestRateStrategy = _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 1);
+        addresses.volatileAssetInterestRateStrategy = _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 2);
+        
+        // Get proxy addresses from PoolAddressesProvider if available
+        if (addresses.poolAddressesProvider != address(0)) {
+            try PoolAddressesProvider(addresses.poolAddressesProvider).getPool() returns (address poolProxy) {
+                addresses.poolProxy = poolProxy;
+            } catch {}
+            
+            try PoolAddressesProvider(addresses.poolAddressesProvider).getPoolConfigurator() returns (address configProxy) {
+                addresses.poolConfiguratorProxy = configProxy;
+            } catch {}
+        }
+    }
+
+    function _loadContractFromBroadcast(string memory scriptName, string memory contractName) internal view returns (address) {
+        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+        
+        try vm.readFile(broadcastFile) returns (string memory json) {
+            bytes memory jsonBytes = bytes(json);
+            if (jsonBytes.length <= 10) {
+                return address(0);
+            }
+            
+            // For most deployment scripts, we want the first (and often only) contract deployed
+            // which is at transactions[0].contractAddress
+            try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
+                return contractAddr;
+            } catch {
+                // If that fails, try alternative patterns
+                return address(0);
+            }
+        } catch {
+            return address(0);
+        }
+    }
+
+    function _loadContractFromBroadcastByIndex(string memory scriptName, uint256 transactionIndex) internal view returns (address) {
+        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+        
+        try vm.readFile(broadcastFile) returns (string memory json) {
+            bytes memory jsonBytes = bytes(json);
+            if (jsonBytes.length <= 10) {
+                return address(0);
+            }
+            
+            // Load contract by transaction index
+            string memory path = string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
+            try vm.parseJsonAddress(json, path) returns (address contractAddr) {
+                return contractAddr;
+            } catch {
+                return address(0);
+            }
+        } catch {
+            return address(0);
+        }
     }
 
     function _verifyConfiguration(DeploymentAddresses memory addresses)
@@ -403,5 +484,19 @@ contract VerifyConfig is BaseScript {
             size := extcodesize(addr)
         }
         return size > 0;
+    }
+
+    function _getPoolAddressesProviderFromBroadcast() internal view returns (address) {
+        string memory broadcastFile = string(abi.encodePacked("./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
+        
+        try vm.readFile(broadcastFile) returns (string memory json) {
+            try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
+                return contractAddr;
+            } catch {
+                return address(0);
+            }
+        } catch {
+            return address(0);
+        }
     }
 }

@@ -21,10 +21,21 @@ import {Constants} from "../utils/Constants.sol";
  */
 contract DeployOracle is BaseScript {
     function run() external {
-        // Load existing deployment
-        string memory existingJson = loadDeployment();
-        address poolAddressesProvider = vm.parseJsonAddress(existingJson, ".poolAddressesProvider");
-        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found in deployment file");
+        // Check if already deployed
+        if (_hasBeenDeployed("05_DeployOracle.s.sol")) {
+            console.log("Oracle deployment already exists. Skipping deployment.");
+            address oracle = _getAaveOracle();
+            address dataProvider = _getAaveProtocolDataProvider();
+            if (oracle != address(0) && dataProvider != address(0)) {
+                console.log("Found existing AaveOracle at:", oracle);
+                console.log("Found existing AaveProtocolDataProvider at:", dataProvider);
+                return;
+            }
+        }
+
+        // Get PoolAddressesProvider from step 1's broadcast file
+        address poolAddressesProvider = _getPoolAddressesProvider();
+        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run step 1 first.");
 
         logSeparator("DEPLOYING ORACLE AND DATA PROVIDER");
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
@@ -56,12 +67,7 @@ contract DeployOracle is BaseScript {
         verifyAddress(address(oracle), "AaveOracle");
         verifyAddress(address(dataProvider), "AaveProtocolDataProvider");
 
-        // Update deployment file
-        string memory json = "deployment";
-        vm.serializeAddress(json, "oracle", address(oracle));
-        vm.serializeAddress(json, "protocolDataProvider", address(dataProvider));
-        string memory finalJson = vm.serializeString(json, "step5", "completed");
-        saveDeployment(finalJson);
+        // Contract addresses are automatically saved to broadcast files
 
         console.log("Oracle set in provider");
         logSeparator("STEP 5 COMPLETED - RUN STEP 6 NEXT");
