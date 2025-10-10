@@ -249,8 +249,9 @@ contract ListWBTC is BaseScript {
             uint256 tokenIndex = _getTokenIndex(tokenSymbol);
             if (tokenIndex == type(uint256).max) return address(0);
 
+            // Each token is deployed twice, so multiply by 2 to get the correct transaction index
             string memory path =
-                string(abi.encodePacked(".transactions[", vm.toString(tokenIndex), "].contractAddress"));
+                string(abi.encodePacked(".transactions[", vm.toString(tokenIndex * 2), "].contractAddress"));
             try vm.parseJsonAddress(json, path) returns (address tokenAddr) {
                 return tokenAddr;
             } catch {
