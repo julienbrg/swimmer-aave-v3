@@ -29,98 +29,94 @@ contract DeployTokenImplementations is BaseScript {
     function run() external {
         // Verify we're on the correct network
         require(block.chainid == Constants.CHAIN_ID, "Wrong network - expected HyperEVM Testnet");
-        
+
         // Load existing deployment
         string memory existingDeployment = loadDeployment();
         address poolAddressesProvider = vm.parseJsonAddress(existingDeployment, ".poolAddressesProvider");
-        require(poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run 01_DeployCoreContracts first.");
-        
+        require(
+            poolAddressesProvider != address(0), "PoolAddressesProvider not found. Run 01_DeployCoreContracts first."
+        );
+
         logSeparator("DEPLOYING TOKEN IMPLEMENTATIONS");
         console.log("Using PoolAddressesProvider:", poolAddressesProvider);
-        
+
         TokenImplementations memory tokens;
-        
+
         startBroadcastWithInfo();
         tokens = _deployTokenImplementations(poolAddressesProvider);
         stopBroadcastWithInfo();
-        
+
         _verifyDeployment(tokens, poolAddressesProvider);
         _saveDeployment(tokens);
-        
+
         logSeparator("TOKEN IMPLEMENTATIONS DEPLOYED SUCCESSFULLY");
     }
-    
-    function _deployTokenImplementations(address poolAddressesProvider) 
-        internal 
-        returns (TokenImplementations memory tokens) 
+
+    function _deployTokenImplementations(address poolAddressesProvider)
+        internal
+        returns (TokenImplementations memory tokens)
     {
         // 1. Deploy AToken implementation
         console.log("\n1. Deploying AToken implementation...");
-        tokens.aTokenImpl = address(
-            new AToken(IPool(poolAddressesProvider))
-        );
+        tokens.aTokenImpl = address(new AToken(IPool(poolAddressesProvider)));
         console.log("   AToken implementation deployed:", tokens.aTokenImpl);
-        
+
         // 2. Deploy StableDebtToken implementation
         console.log("\n2. Deploying StableDebtToken implementation...");
-        tokens.stableDebtTokenImpl = address(
-            new StableDebtToken(IPool(poolAddressesProvider))
-        );
+        tokens.stableDebtTokenImpl = address(new StableDebtToken(IPool(poolAddressesProvider)));
         console.log("   StableDebtToken implementation deployed:", tokens.stableDebtTokenImpl);
-        
+
         // 3. Deploy VariableDebtToken implementation
         console.log("\n3. Deploying VariableDebtToken implementation...");
-        tokens.variableDebtTokenImpl = address(
-            new VariableDebtToken(IPool(poolAddressesProvider))
-        );
+        tokens.variableDebtTokenImpl = address(new VariableDebtToken(IPool(poolAddressesProvider)));
         console.log("   VariableDebtToken implementation deployed:", tokens.variableDebtTokenImpl);
-        
+
         console.log("\nAll token implementations deployed!");
-        
+
         return tokens;
     }
-    
+
     function _verifyDeployment(TokenImplementations memory tokens, address poolAddressesProvider) internal view {
         logSeparator("VERIFYING TOKEN IMPLEMENTATIONS");
-        
+
         verifyAddress(tokens.aTokenImpl, "AToken Implementation");
         verifyAddress(tokens.stableDebtTokenImpl, "StableDebtToken Implementation");
         verifyAddress(tokens.variableDebtTokenImpl, "VariableDebtToken Implementation");
-        
+
         // Verify that tokens are correctly configured
         AToken aToken = AToken(tokens.aTokenImpl);
         require(address(aToken.POOL()) != address(0), "AToken POOL not set");
-        
+
         StableDebtToken stableDebtToken = StableDebtToken(tokens.stableDebtTokenImpl);
         require(address(stableDebtToken.POOL()) != address(0), "StableDebtToken POOL not set");
-        
+
         VariableDebtToken variableDebtToken = VariableDebtToken(tokens.variableDebtTokenImpl);
         require(address(variableDebtToken.POOL()) != address(0), "VariableDebtToken POOL not set");
-        
+
         console.log("All token implementation verifications passed!");
     }
-    
+
     function _saveDeployment(TokenImplementations memory tokens) internal {
         // Load and modify existing deployment
         string memory existingJson = loadDeployment();
-        
+
         // Create new JSON with token implementations
         string memory json = "deployment";
         vm.serializeAddress(json, "aTokenImpl", tokens.aTokenImpl);
         vm.serializeAddress(json, "stableDebtTokenImpl", tokens.stableDebtTokenImpl);
         string memory tokensJson = vm.serializeAddress(json, "variableDebtTokenImpl", tokens.variableDebtTokenImpl);
-        
+
         // For now, just save token implementations. In production, would merge with existing JSON
         saveDeployment(tokensJson);
         console.log("Token implementations added to deployment file");
     }
-    
+
     function _logDeploymentSummary(TokenImplementations memory tokens) internal view {
         logSeparator("TOKEN IMPLEMENTATIONS SUMMARY");
         console.log("AToken Implementation:        ", tokens.aTokenImpl);
         console.log("StableDebtToken Implementation:", tokens.stableDebtTokenImpl);
         console.log("VariableDebtToken Implementation:", tokens.variableDebtTokenImpl);
-        
+
         console.log("\nNext steps:");
         console.log("1. Run 03_DeployInterestRateStrategy.s.sol");
         console.log("2. Configure reserves using these implementations");
