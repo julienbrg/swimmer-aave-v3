@@ -70,11 +70,7 @@ contract ListUSDC is BaseScript {
         console.log("=================================================");
     }
 
-    function _prepareUSDCConfig(address usdcToken)
-        internal
-        view
-        returns (USDCConfig memory config)
-    {
+    function _prepareUSDCConfig(address usdcToken) internal view returns (USDCConfig memory config) {
         console.log("\n1. PREPARING USDC CONFIGURATION...");
 
         // Load required addresses from broadcast files
@@ -224,8 +220,12 @@ contract ListUSDC is BaseScript {
     }
 
     function _getPoolAddressesProviderFromBroadcast() internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
-        
+        string memory broadcastFile = string(
+            abi.encodePacked(
+                "./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"
+            )
+        );
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
                 return contractAddr;
@@ -238,14 +238,17 @@ contract ListUSDC is BaseScript {
     }
 
     function _getMockTokenFromBroadcast(string memory tokenSymbol) internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/09_DeployMockTokens.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
-        
+        string memory broadcastFile = string(
+            abi.encodePacked("./broadcast/09_DeployMockTokens.s.sol/", vm.toString(block.chainid), "/run-latest.json")
+        );
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             // Mock tokens are deployed in a specific order: USDC, USDT, DAI, WBTC, LINK, UNI
             uint256 tokenIndex = _getTokenIndex(tokenSymbol);
             if (tokenIndex == type(uint256).max) return address(0);
-            
-            string memory path = string(abi.encodePacked(".transactions[", vm.toString(tokenIndex), "].contractAddress"));
+
+            string memory path =
+                string(abi.encodePacked(".transactions[", vm.toString(tokenIndex), "].contractAddress"));
             try vm.parseJsonAddress(json, path) returns (address tokenAddr) {
                 return tokenAddr;
             } catch {
@@ -256,11 +259,18 @@ contract ListUSDC is BaseScript {
         }
     }
 
-    function _getContractFromBroadcast(string memory scriptName, uint256 transactionIndex) internal view override returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
-        
+    function _getContractFromBroadcast(string memory scriptName, uint256 transactionIndex)
+        internal
+        view
+        override
+        returns (address)
+    {
+        string memory broadcastFile =
+            string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+
         try vm.readFile(broadcastFile) returns (string memory json) {
-            string memory path = string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
+            string memory path =
+                string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
             try vm.parseJsonAddress(json, path) returns (address contractAddr) {
                 return contractAddr;
             } catch {

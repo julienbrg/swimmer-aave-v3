@@ -61,13 +61,13 @@ contract VerifyConfig is BaseScript {
 
         // Load addresses dynamically from broadcast files
         DeploymentAddresses memory addresses = _loadAddressesFromBroadcast();
-        
+
         if (addresses.poolAddressesProvider == address(0)) {
             console.log("ERROR: PoolAddressesProvider not found in broadcast files.");
             console.log("Please run deployment scripts first.");
             return;
         }
-        
+
         // Load other addresses by querying the provider
         _loadAddressesFromProvider(addresses);
         ConfigurationStatus memory status = _verifyConfiguration(addresses);
@@ -81,26 +81,26 @@ contract VerifyConfig is BaseScript {
 
     function _loadAddressesFromProvider(DeploymentAddresses memory addresses) internal view {
         if (addresses.poolAddressesProvider == address(0)) return;
-        
+
         PoolAddressesProvider provider = PoolAddressesProvider(addresses.poolAddressesProvider);
-        
+
         // Get addresses from the provider
         try provider.getPool() returns (address poolProxy) {
             addresses.poolProxy = poolProxy;
         } catch {}
-        
+
         try provider.getPoolConfigurator() returns (address configProxy) {
             addresses.poolConfiguratorProxy = configProxy;
         } catch {}
-        
+
         try provider.getACLManager() returns (address aclManager) {
             addresses.aclManager = aclManager;
         } catch {}
-        
+
         try provider.getPriceOracle() returns (address oracle) {
             addresses.oracle = oracle;
         } catch {}
-        
+
         // For token implementations and other contracts, we'll set them to address(0)
         // since they're not directly accessible from the provider
         // The verification will note these as not found, which is expected
@@ -108,49 +108,62 @@ contract VerifyConfig is BaseScript {
 
     function _loadAddressesFromBroadcast() internal view returns (DeploymentAddresses memory addresses) {
         // Load PoolAddressesProvider from step 1
-        addresses.poolAddressesProvider = _loadContractFromBroadcast("01_DeployCoreContracts.s.sol", "PoolAddressesProvider");
-        
+        addresses.poolAddressesProvider =
+            _loadContractFromBroadcast("01_DeployCoreContracts.s.sol", "PoolAddressesProvider");
+
         // Load ACL Manager from step 3
         addresses.aclManager = _loadContractFromBroadcast("03_DeployACL.s.sol", "ACLManager");
-        
+
         // Load Pool implementations from step 4
         addresses.pool = _loadContractFromBroadcast("04_DeployPool.s.sol", "Pool");
         addresses.poolConfigurator = _loadContractFromBroadcast("04_DeployPool.s.sol", "PoolConfigurator");
-        
+
         // Load Oracle from step 5
         addresses.oracle = _loadContractFromBroadcast("05_DeployOracle.s.sol", "AaveOracle");
-        
+
         // Load token implementations from step 7
         addresses.aTokenImpl = _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "AToken");
-        addresses.stableDebtTokenImpl = _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "StableDebtToken");
-        addresses.variableDebtTokenImpl = _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "VariableDebtToken");
-        
+        addresses.stableDebtTokenImpl =
+            _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "StableDebtToken");
+        addresses.variableDebtTokenImpl =
+            _loadContractFromBroadcast("07_DeployTokenImplementations.s.sol", "VariableDebtToken");
+
         // Load interest rate strategies from step 8 (multiple strategies deployed in single script)
-        addresses.defaultInterestRateStrategy = _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 0);
-        addresses.stablecoinInterestRateStrategy = _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 1);
-        addresses.volatileAssetInterestRateStrategy = _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 2);
-        
+        addresses.defaultInterestRateStrategy =
+            _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 0);
+        addresses.stablecoinInterestRateStrategy =
+            _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 1);
+        addresses.volatileAssetInterestRateStrategy =
+            _loadContractFromBroadcastByIndex("08_DeployInterestRateStrategy.s.sol", 2);
+
         // Get proxy addresses from PoolAddressesProvider if available
         if (addresses.poolAddressesProvider != address(0)) {
             try PoolAddressesProvider(addresses.poolAddressesProvider).getPool() returns (address poolProxy) {
                 addresses.poolProxy = poolProxy;
             } catch {}
-            
-            try PoolAddressesProvider(addresses.poolAddressesProvider).getPoolConfigurator() returns (address configProxy) {
+
+            try PoolAddressesProvider(addresses.poolAddressesProvider).getPoolConfigurator() returns (
+                address configProxy
+            ) {
                 addresses.poolConfiguratorProxy = configProxy;
             } catch {}
         }
     }
 
-    function _loadContractFromBroadcast(string memory scriptName, string memory contractName) internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
-        
+    function _loadContractFromBroadcast(string memory scriptName, string memory contractName)
+        internal
+        view
+        returns (address)
+    {
+        string memory broadcastFile =
+            string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             bytes memory jsonBytes = bytes(json);
             if (jsonBytes.length <= 10) {
                 return address(0);
             }
-            
+
             // For most deployment scripts, we want the first (and often only) contract deployed
             // which is at transactions[0].contractAddress
             try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
@@ -164,17 +177,23 @@ contract VerifyConfig is BaseScript {
         }
     }
 
-    function _loadContractFromBroadcastByIndex(string memory scriptName, uint256 transactionIndex) internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
-        
+    function _loadContractFromBroadcastByIndex(string memory scriptName, uint256 transactionIndex)
+        internal
+        view
+        returns (address)
+    {
+        string memory broadcastFile =
+            string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             bytes memory jsonBytes = bytes(json);
             if (jsonBytes.length <= 10) {
                 return address(0);
             }
-            
+
             // Load contract by transaction index
-            string memory path = string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
+            string memory path =
+                string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
             try vm.parseJsonAddress(json, path) returns (address contractAddr) {
                 return contractAddr;
             } catch {
@@ -487,8 +506,12 @@ contract VerifyConfig is BaseScript {
     }
 
     function _getPoolAddressesProviderFromBroadcast() internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
-        
+        string memory broadcastFile = string(
+            abi.encodePacked(
+                "./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"
+            )
+        );
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
                 return contractAddr;

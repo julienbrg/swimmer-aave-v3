@@ -48,8 +48,12 @@ contract DeployRegistry is BaseScript {
     }
 
     function _getPoolAddressesProvider() internal view override returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
-        
+        string memory broadcastFile = string(
+            abi.encodePacked(
+                "./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"
+            )
+        );
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
                 return contractAddr;

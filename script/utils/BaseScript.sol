@@ -20,15 +20,20 @@ abstract contract BaseScript is Script {
         vm.stopBroadcast();
     }
 
-    function loadAddressFromBroadcast(string memory scriptName, string memory contractName) internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
-        
+    function loadAddressFromBroadcast(string memory scriptName, string memory contractName)
+        internal
+        view
+        returns (address)
+    {
+        string memory broadcastFile =
+            string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             bytes memory jsonBytes = bytes(json);
             if (jsonBytes.length <= 2) {
                 return address(0);
             }
-            
+
             // Parse transactions array to find the contract
             string memory transactionsKey = ".transactions";
             try vm.parseJson(json, transactionsKey) returns (bytes memory transactionsData) {
@@ -49,17 +54,24 @@ abstract contract BaseScript is Script {
      * @param transactionIndex The index of the transaction in the broadcast file (0-based)
      * @return The contract address, or address(0) if not found
      */
-    function _getContractFromBroadcast(string memory scriptName, uint256 transactionIndex) internal view virtual returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
-        
+    function _getContractFromBroadcast(string memory scriptName, uint256 transactionIndex)
+        internal
+        view
+        virtual
+        returns (address)
+    {
+        string memory broadcastFile =
+            string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             bytes memory jsonBytes = bytes(json);
             if (jsonBytes.length <= 2) {
                 return address(0);
             }
-            
+
             // Parse the transaction at the specified index
-            string memory transactionKey = string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
+            string memory transactionKey =
+                string(abi.encodePacked(".transactions[", vm.toString(transactionIndex), "].contractAddress"));
             try vm.parseJsonAddress(json, transactionKey) returns (address contractAddress) {
                 return contractAddress;
             } catch {
@@ -79,7 +91,7 @@ abstract contract BaseScript is Script {
     }
 
     /**
-     * @dev Get the ACLManager address from step 3's broadcast file  
+     * @dev Get the ACLManager address from step 3's broadcast file
      * @return The ACLManager address
      */
     function _getACLManager() internal view returns (address) {
@@ -128,8 +140,9 @@ abstract contract BaseScript is Script {
     }
 
     function checkDeploymentExists(string memory scriptName) internal view returns (bool) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
-        
+        string memory broadcastFile =
+            string(abi.encodePacked("./broadcast/", scriptName, "/", vm.toString(block.chainid), "/run-latest.json"));
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             // Check if the broadcast file contains successful transactions
             return bytes(json).length > 50; // Basic check for non-empty broadcast

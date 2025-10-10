@@ -100,8 +100,12 @@ contract CheckReserves is BaseScript {
     }
 
     function _getPoolAddressesProviderFromBroadcast() internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
-        
+        string memory broadcastFile = string(
+            abi.encodePacked(
+                "./broadcast/01_DeployCoreContracts.s.sol/", vm.toString(block.chainid), "/run-latest.json"
+            )
+        );
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             try vm.parseJsonAddress(json, ".transactions[0].contractAddress") returns (address contractAddr) {
                 return contractAddr;
@@ -114,14 +118,17 @@ contract CheckReserves is BaseScript {
     }
 
     function _getMockTokenFromBroadcast(string memory tokenSymbol) internal view returns (address) {
-        string memory broadcastFile = string(abi.encodePacked("./broadcast/09_DeployMockTokens.s.sol/", vm.toString(block.chainid), "/run-latest.json"));
-        
+        string memory broadcastFile = string(
+            abi.encodePacked("./broadcast/09_DeployMockTokens.s.sol/", vm.toString(block.chainid), "/run-latest.json")
+        );
+
         try vm.readFile(broadcastFile) returns (string memory json) {
             // Mock tokens are deployed in a specific order: USDC, USDT, DAI, WBTC, LINK, UNI
             uint256 tokenIndex = _getTokenIndex(tokenSymbol);
             if (tokenIndex == type(uint256).max) return address(0);
-            
-            string memory path = string(abi.encodePacked(".transactions[", vm.toString(tokenIndex), "].contractAddress"));
+
+            string memory path =
+                string(abi.encodePacked(".transactions[", vm.toString(tokenIndex), "].contractAddress"));
             try vm.parseJsonAddress(json, path) returns (address tokenAddr) {
                 return tokenAddr;
             } catch {
