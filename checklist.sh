@@ -45,7 +45,7 @@ section_header() {
     echo -e "\n${BLUE}=== $1 ===${NC}"
 }
 
-echo -e "${BLUE}Aave V3.0 HyperEVM Testnet Deployment Readiness Check${NC}\n"
+echo -e "${BLUE}Aave V3.0 Deployment Readiness Check${NC}\n"
 
 # Environment Setup Checks
 section_header "Environment Setup"
@@ -75,22 +75,17 @@ if [ -f ".env" ]; then
         check_failed "PRIVATE_KEY not set in .env"
     fi
     
-    # Check for HyperEVM Testnet specific variables
-    if [ -n "$HYPEREVM_TESTNET_RPC_URL" ]; then
-        check_passed "HYPEREVM_TESTNET_RPC_URL is set: $HYPEREVM_TESTNET_RPC_URL"
+    # Check for network configuration variables
+    if [ -n "$RPC_URL" ]; then
+        check_passed "RPC_URL is set: $RPC_URL"
     else
-        check_failed "HYPEREVM_TESTNET_RPC_URL not set in .env"
+        check_failed "RPC_URL not set in .env"
     fi
     
-    if [ -n "$HYPEREVM_TESTNET_CHAIN_ID" ]; then
-        check_passed "HYPEREVM_TESTNET_CHAIN_ID is set: $HYPEREVM_TESTNET_CHAIN_ID"
+    if [ -n "$CHAIN_ID" ]; then
+        check_passed "CHAIN_ID is set: $CHAIN_ID"
     else
-        check_failed "HYPEREVM_TESTNET_CHAIN_ID not set in .env"
-    fi
-    
-    # Fallback to generic RPC_URL if HyperEVM specific not set
-    if [ -n "$RPC_URL" ] && [ -z "$HYPEREVM_TESTNET_RPC_URL" ]; then
-        check_warning "Using fallback RPC_URL: $RPC_URL (consider setting HYPEREVM_TESTNET_RPC_URL)"
+        check_warning "CHAIN_ID not set in .env (optional but recommended)"
     fi
     
 else
@@ -118,11 +113,11 @@ section_header "Dependencies"
 if [ -d "lib" ] && [ "$(ls -A lib)" ]; then
     check_passed "Dependencies installed in lib/ directory"
     
-    # Check for key Aave dependencies
-    if [ -d "lib/aave-v3-core" ]; then
-        check_passed "aave-v3-core dependency found"
+    # Aave V3 contracts in src/
+    if [ -d "src/protocol" ]; then
+        check_passed "Aave V3 contracts found in src/"
     else
-        check_warning "aave-v3-core dependency not found in lib/"
+        check_failed "Aave V3 contracts not found in src/"
     fi
     
     if [ -d "lib/openzeppelin-contracts" ]; then
@@ -134,17 +129,10 @@ else
     check_failed "No dependencies found. Run 'forge install' to install dependencies."
 fi
 
-# HyperEVM Testnet Network Checks
-section_header "HyperEVM Testnet Network"
+# Network Connectivity Checks
+section_header "Network Connectivity"
 
-# Use HyperEVM specific RPC URL, fallback to generic RPC_URL
-NETWORK_RPC_URL=""
-if [ -n "$HYPEREVM_TESTNET_RPC_URL" ]; then
-    NETWORK_RPC_URL="$HYPEREVM_TESTNET_RPC_URL"
-elif [ -n "$RPC_URL" ]; then
-    NETWORK_RPC_URL="$RPC_URL"
-    check_warning "Using generic RPC_URL instead of HYPEREVM_TESTNET_RPC_URL"
-fi
+NETWORK_RPC_URL="$RPC_URL"
 
 if [ -n "$NETWORK_RPC_URL" ]; then
     # Test RPC connectivity
@@ -161,16 +149,16 @@ if [ -n "$NETWORK_RPC_URL" ]; then
             ACTUAL_CHAIN_ID_DECIMAL=$((ACTUAL_CHAIN_ID))
             check_passed "RPC endpoint accessible (Chain ID: $ACTUAL_CHAIN_ID_DECIMAL)"
             
-            # Verify chain ID matches expected HyperEVM Testnet Chain ID
-            if [ -n "$HYPEREVM_TESTNET_CHAIN_ID" ]; then
-                EXPECTED_CHAIN_ID_DECIMAL=$((HYPEREVM_TESTNET_CHAIN_ID))
+            # Verify chain ID matches expected Chain ID if set
+            if [ -n "$CHAIN_ID" ]; then
+                EXPECTED_CHAIN_ID_DECIMAL=$((CHAIN_ID))
                 if [ "$ACTUAL_CHAIN_ID_DECIMAL" -eq "$EXPECTED_CHAIN_ID_DECIMAL" ]; then
-                    check_passed "Chain ID matches HyperEVM Testnet: $ACTUAL_CHAIN_ID_DECIMAL"
+                    check_passed "Chain ID matches expected: $ACTUAL_CHAIN_ID_DECIMAL"
                 else
                     check_failed "Chain ID mismatch! Expected: $EXPECTED_CHAIN_ID_DECIMAL, Got: $ACTUAL_CHAIN_ID_DECIMAL"
                 fi
             else
-                check_warning "Cannot verify chain ID - HYPEREVM_TESTNET_CHAIN_ID not set"
+                check_passed "Connected to network (Chain ID: $ACTUAL_CHAIN_ID_DECIMAL)"
             fi
         else
             check_failed "RPC endpoint returned invalid chain ID"
@@ -179,7 +167,7 @@ if [ -n "$NETWORK_RPC_URL" ]; then
         check_failed "Cannot connect to RPC endpoint: $NETWORK_RPC_URL"
     fi
 else
-    check_failed "No RPC URL configured (set HYPEREVM_TESTNET_RPC_URL or RPC_URL)"
+    check_failed "No RPC URL configured (set RPC_URL in .env)"
 fi
 
 # Enhanced deployer wallet balance check
@@ -373,7 +361,7 @@ fi
 echo -e "\n${BLUE}📊 Overall Status:${NC}"
 if [ $CHECKS_FAILED -eq 0 ]; then
     echo -e "${GREEN}🎉 All critical checks passed! ($CHECKS_PASSED/$CHECKS_TOTAL)${NC}"
-    echo -e "${GREEN}✅ Ready for HyperEVM Testnet deployment${NC}"
+    echo -e "${GREEN}✅ Ready for deployment${NC}"
     
     # Console log all verified items for easy copying
     echo -e "\n${BLUE}📝 Console Log - All Verified Items:${NC}"

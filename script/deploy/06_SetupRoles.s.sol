@@ -5,7 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {ACLManager} from "aave-v3-core/contracts/protocol/configuration/ACLManager.sol";
+import {ACLManager} from "../../src/protocol/configuration/ACLManager.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";

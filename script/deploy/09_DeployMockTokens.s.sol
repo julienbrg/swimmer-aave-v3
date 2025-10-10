@@ -5,7 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {MintableERC20} from "aave-v3-core/contracts/mocks/tokens/MintableERC20.sol";
+import {MintableERC20} from "../../src/mocks/tokens/MintableERC20.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";

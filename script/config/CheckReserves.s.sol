@@ -5,9 +5,9 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {PoolAddressesProvider} from "aave-v3-core/contracts/protocol/configuration/PoolAddressesProvider.sol";
-import {IPool} from "aave-v3-core/contracts/interfaces/IPool.sol";
-import {DataTypes} from "aave-v3-core/contracts/protocol/libraries/types/DataTypes.sol";
+import {PoolAddressesProvider} from "../../src/protocol/configuration/PoolAddressesProvider.sol";
+import {IPool} from "../../src/interfaces/IPool.sol";
+import {DataTypes} from "../../src/protocol/libraries/types/DataTypes.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";

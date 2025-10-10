@@ -65,12 +65,7 @@ check_prerequisites() {
         exit 1
     fi
     
-    # Check if lib/aave-v3-core exists
-    if [[ ! -d "lib/aave-v3-core" ]]; then
-        print_error "aave-v3-core dependency not found!"
-        print_status "Installing aave-v3-core dependency..."
-        forge install aave/aave-v3-core --no-commit
-    fi
+    # Note: Aave V3 contracts are now in src/ directory, no external dependency needed
     
     print_success "All prerequisites met"
 }

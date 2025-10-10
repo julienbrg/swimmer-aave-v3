@@ -7,9 +7,6 @@
 First, install the required libraries:
 
 ```shell
-# Install Aave V3 Core contracts
-forge install aave/aave-v3-core --no-commit
-
 # Install OpenZeppelin contracts
 forge install OpenZeppelin/openzeppelin-contracts --no-commit
 
@@ -108,10 +105,10 @@ After deployment, verify and configure your protocol:
 
 ```shell
 # Verify complete deployment configuration (should show 100/100)
-forge script script/config/VerifyConfig.s.sol:VerifyConfig --rpc-url $RPC_URL -vvv
+source .env && forge script script/config/VerifyConfig.s.sol:VerifyConfig --rpc-url $RPC_URL -vvv
 
 # Check which reserves are currently listed
-forge script script/config/CheckReserves.s.sol:CheckReserves --rpc-url $RPC_URL -vvv
+source .env && forge script script/config/CheckReserves.s.sol:CheckReserves --rpc-url $RPC_URL -vvv
 
 # List new reserves (will work for unlisted tokens like DAI, WBTC, etc.)
 source .env && forge script script/config/ListUSDC.s.sol:ListUSDC --rpc-url $RPC_URL --broadcast -vvv

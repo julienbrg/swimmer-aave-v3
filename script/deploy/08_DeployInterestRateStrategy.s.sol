@@ -5,9 +5,8 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {DefaultReserveInterestRateStrategy} from
-    "aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol";
-import {IPoolAddressesProvider} from "aave-v3-core/contracts/interfaces/IPoolAddressesProvider.sol";
+import {DefaultReserveInterestRateStrategy} from "../../src/protocol/pool/DefaultReserveInterestRateStrategy.sol";
+import {IPoolAddressesProvider} from "../../src/interfaces/IPoolAddressesProvider.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";

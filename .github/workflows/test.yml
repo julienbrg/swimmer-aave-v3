@@ -29,7 +29,6 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          forge install aave/aave-v3-core
           forge install OpenZeppelin/openzeppelin-contracts
 
       - name: Build contracts

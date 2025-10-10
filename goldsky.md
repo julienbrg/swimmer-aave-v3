@@ -3,7 +3,7 @@
 **Network**: HyperEVM Testnet  
 **Chain ID**: 998  
 **RPC URL**: https://rpc.hyperliquid-testnet.xyz/evm  
-**Deployment Date**: 2025-01-10  
+**Deployment Date**: 2025-10-10  
 **Deployer**: 0x9a6586c563D56899d2d84a6b22729870126f62Fb  
 
 ## 🏗️ Core Protocol Contracts
@@ -12,41 +12,41 @@
 
 | Contract | Type | Address | ABI Location |
 |----------|------|---------|--------------|
-| **Pool (Main Entry)** | Proxy | `0xd029e2017a76dCA2D2DD354A2A92FBce7e5D2074` | `lib/aave-v3-core/contracts/interfaces/IPool.sol` |
-| **PoolConfigurator** | Proxy | `0x3C84e78f59796D1Fe182D606Ce0A95b93d5f73DA` | `lib/aave-v3-core/contracts/interfaces/IPoolConfigurator.sol` |
-| **PoolAddressesProvider** | Implementation | `0x97b1E699Fe1E9Ae1e43f2b9845b9233373a4b3dC` | `lib/aave-v3-core/contracts/protocol/configuration/PoolAddressesProvider.sol` |
+| **Pool (Main Entry)** | Proxy | `0x3aCd6c3e7BF09D907D08Dc4499f200005356d0ef` | `src/interfaces/IPool.sol` |
+| **PoolConfigurator** | Proxy | `0xC9bF120d5Fe885df20437Da02B41c75cc42Bd6bF` | `src/interfaces/IPoolConfigurator.sol` |
+| **PoolAddressesProvider** | Implementation | `0xF8B71cC4313A2e628000E6fEbF58C962671587D2` | `src/protocol/configuration/PoolAddressesProvider.sol` |
 
 ### Core Infrastructure
 
 | Contract | Type | Address | ABI Location |
 |----------|------|---------|--------------|
-| **PoolAddressesProviderRegistry** | Implementation | `0x476270053811a993E5D33a31aC97fbA912BD7559` | `lib/aave-v3-core/contracts/protocol/configuration/PoolAddressesProviderRegistry.sol` |
-| **ACLManager** | Implementation | `0xd85120Dd1f1eD7957930363F5E668ef6Edfc4905` | `lib/aave-v3-core/contracts/protocol/configuration/ACLManager.sol` |
-| **AaveOracle** | Implementation | `0x4A3F56F843EE5C3812fd2751C49aDEf95e544DD2` | `lib/aave-v3-core/contracts/misc/AaveOracle.sol` |
-| **AaveProtocolDataProvider** | Implementation | `0x8A5EBDf0031ED72Eb381e4607894aea7038e94D3` | `lib/aave-v3-core/contracts/misc/AaveProtocolDataProvider.sol` |
+| **PoolAddressesProviderRegistry** | Implementation | `0x7346286767ee9285ff3074ab362b62ee299b9fb5` | `src/protocol/configuration/PoolAddressesProviderRegistry.sol` |
+| **ACLManager** | Implementation | `0x219b6467b0b5eF7deb98DFEB963EeAA312bc12fd` | `src/protocol/configuration/ACLManager.sol` |
+| **AaveOracle** | Implementation | `0x56Cc9AFD307bc532A642a3f253A3d426Fc118Aa3` | `src/misc/AaveOracle.sol` |
+| **AaveProtocolDataProvider** | Implementation | `0x2d5062679ff5c01f0db2002da7d9a1f0951fd9bb` | `src/misc/AaveProtocolDataProvider.sol` |
 
 ### Implementation Contracts
 
 | Contract | Type | Address | ABI Location |
 |----------|------|---------|--------------|
-| **Pool Implementation** | Implementation | `0xe1D5159242038e193015a49890f324a38A75AF04` | `lib/aave-v3-core/contracts/protocol/pool/Pool.sol` |
-| **PoolConfigurator Implementation** | Implementation | `0x5Af8c85E111D4A17C5B568Dd20a33b740070f0E2` | `lib/aave-v3-core/contracts/protocol/pool/PoolConfigurator.sol` |
+| **Pool Implementation** | Implementation | `0xdC68cAD40F05a2CfF3C06E1b1115844135073947` | `src/protocol/pool/Pool.sol` |
+| **PoolConfigurator Implementation** | Implementation | `0x038bB8c03772d95db8dCC1F2CF9c616Bb6cfB721` | `src/protocol/pool/PoolConfigurator.sol` |
 
 ## 🪙 Token Implementations
 
 | Contract | Address | ABI Location |
 |----------|---------|--------------|
-| **AToken Implementation** | `0x0dbcd5B405B1128bF06E75F937f600ea53D76076` | `lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol` |
-| **StableDebtToken Implementation** | `0x84B14AA9b21FA45deD2A5C83990e8769D4df5073` | `lib/aave-v3-core/contracts/protocol/tokenization/StableDebtToken.sol` |
-| **VariableDebtToken Implementation** | `0xf2c8b78278B48A9c91b39C86D3990228cEaC5aC0` | `lib/aave-v3-core/contracts/protocol/tokenization/VariableDebtToken.sol` |
+| **AToken Implementation** | `0x2b77f245B2E3074311c16a6566Fc774741e2837B` | `src/protocol/tokenization/AToken.sol` |
+| **StableDebtToken Implementation** | `0x395BFa35B24F01B9EC38C44E249850394C3D41be` | `src/protocol/tokenization/StableDebtToken.sol` |
+| **VariableDebtToken Implementation** | `0x212c5b766fCf3Aa190165FAdD3491dd3EB033f3e` | `src/protocol/tokenization/VariableDebtToken.sol` |
 
 ## 📈 Interest Rate Strategies
 
 | Strategy | Address | ABI Location |
 |----------|---------|--------------|
-| **Default Strategy** | `0x60471ABd262E2388e90FbE1f676ed0C762C39a09` | `lib/aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
-| **Stablecoin Strategy** | `0xa89cc87b458c0C89c8842E44441093d330EfF40F` | `lib/aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
-| **Volatile Asset Strategy** | `0xD4d76e84E1B0EA4eba09bEE40D06C6cfB89B7cBE` | `lib/aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
+| **Default Strategy** | `0xBb8B3650FC8448571D0e39C14336e3127e11e8D4` | `src/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
+| **Stablecoin Strategy** | `0xFF76a41CA163c16d6B1ED1988903f4f1B71Ae3f1` | `src/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
+| **Volatile Asset Strategy** | `0x6D6bE9efd2CD9880FB06d357Bce2E568aC11519d` | `src/protocol/pool/DefaultReserveInterestRateStrategy.sol` |
 
 ### Strategy Parameters
 
@@ -60,32 +60,38 @@
 
 | Token | Symbol | Address | Decimals | ABI Location |
 |-------|--------|---------|----------|--------------|
-| **Mock USD Coin** | USDC | `0x83C0F8D4e46E5B81461aC0133B635f57745b464E` | 6 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Tether USD** | USDT | `0xEc048DA076f171BcCac90F1CE888FcabC10c6c4b` | 6 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Dai Stablecoin** | DAI | `0x610a2f01C74357dcf2117CdFBB07736FEb145167` | 18 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Wrapped Bitcoin** | WBTC | `0x63944467f67da637a703A7F3C13F748F3C10958A` | 8 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Chainlink** | LINK | `0xB191D82173471ec22098e35CC19C5621861555Cf` | 18 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
-| **Mock Uniswap** | UNI | `0x7BdBa9B1C27343D105FA39A9c34c340d7549AccB` | 18 | `lib/aave-v3-core/contracts/mocks/tokens/MintableERC20.sol` |
+| **Mock USD Coin** | USDC | `0x14Ee4343dc75d77446041Be83ae6f3385ccb695A` | 6 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Tether USD** | USDT | `0x2D9a93AF809Ea53A90b5aC29e15c66F6e2FDcFb5` | 6 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Dai Stablecoin** | DAI | `0x5D51C1e40eDCb36b2Bb207242587d76CF799Eb05` | 18 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Wrapped Bitcoin** | WBTC | `0x6353e6A9920C964ae9E485b0B7f1F83dE7403945` | 8 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Chainlink** | LINK | `0x26D7B0b2852802Fc58d97a0865771318b306BD1C` | 18 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Uniswap** | UNI | `0x67ad97dfF0b6234F7E3c7e8E48ef035A4119428f` | 18 | `src/mocks/tokens/MintableERC20.sol` |
 
 ## 🏦 Active Reserves
 
-### USDC Reserve (LISTED)
+✅ **2 reserves are currently listed and active:**
 
-| Token Type | Address | ABI Location |
-|------------|---------|--------------|
-| **aUSDC** | `0x85fd9D3a818ad4659d5F28616afd37Fe388a63B1` | `lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol` |
-| **Stable Debt USDC** | `0xdD4C652f1b6791eEeeBda1606EE46A277cb6F520` | `lib/aave-v3-core/contracts/protocol/tokenization/StableDebtToken.sol` |
-| **Variable Debt USDC** | `0xf3a71fe73C1CF34287BA622156B255914a7e3f07` | `lib/aave-v3-core/contracts/protocol/tokenization/VariableDebtToken.sol` |
+| Reserve | Token Address | aToken | Stable Debt Token | Variable Debt Token | Strategy |
+|---------|---------------|---------|-------------------|---------------------|----------|
+| **USDC** | `0x14Ee4343dc75d77446041Be83ae6f3385ccb695A` | `0xB9D2724344b8641364151D98F7936df3B757967C` | `0x196eBD89dCbADbfa718b6F074510860ccfAe7dd9` | `0x81868016B15387A8d6baE923b5dA49C4295182d8` | Stablecoin Strategy |
+| **USDT** | `0x2D9a93AF809Ea53A90b5aC29e15c66F6e2FDcFb5` | `0xB9D2724344b8641364151D98F7936df3B757967C` | `0x196eBD89dCbADbfa718b6F074510860ccfAe7dd9` | `0x81868016B15387A8d6baE923b5dA49C4295182d8` | Stablecoin Strategy |
 
-**Reserve Configuration:**
-- **Underlying Asset**: Mock USD Coin (USDC)
-- **LTV**: 80%
-- **Liquidation Threshold**: 85%
-- **Liquidation Bonus**: 5%
-- **Reserve Factor**: 10%
-- **Interest Rate Strategy**: Stablecoin Strategy
-- **Borrowing Enabled**: Yes
-- **Stable Rate Borrowing**: Yes
+### Available but Unlisted Tokens
+
+The following tokens are deployed but not yet listed as reserves:
+
+| Token | Symbol | Address | Status |
+|-------|---------|---------|---------|
+| **Mock Dai Stablecoin** | DAI | `0x5D51C1e40eDCb36b2Bb207242587d76CF799Eb05` | Ready to list |
+| **Mock Wrapped Bitcoin** | WBTC | `0x6353e6A9920C964ae9E485b0B7f1F83dE7403945` | Ready to list |
+| **Mock Chainlink** | LINK | `0x26D7B0b2852802Fc58d97a0865771318b306BD1C` | Ready to list |
+| **Mock Uniswap** | UNI | `0x67ad97dfF0b6234F7E3c7e8E48ef035A4119428f` | Ready to list |
+
+To list additional reserves:
+```bash
+# Example: List DAI as a reserve
+source .env && forge script script/config/ListDAI.s.sol:ListDAI --rpc-url $RPC_URL --broadcast -vvv
+```
 
 ## 📁 ABI Compilation Artifacts
 
@@ -135,10 +141,12 @@ source .env && forge script script/config/ListUSDC.s.sol:ListUSDC --rpc-url $RPC
 
 ## 📋 Deployment Summary
 
-**Total Gas Used**: ~35M gas  
-**Total Cost**: ~0.0035 ETH on HyperEVM Testnet  
+**Total Gas Used**: ~29M gas  
+**Total Cost**: ~0.0029 ETH on HyperEVM Testnet  
 **Deployment Status**: ✅ **COMPLETE** (100/100 verification score)  
-**Protocol Status**: 🚀 **FULLY OPERATIONAL**
+**Protocol Status**: 🚀 **FULLY OPERATIONAL**  
+**Active Reserves**: ✅ **2 reserves listed** (USDC, USDT)  
+**Ready to Use**: ✅ **Yes** - Users can deposit, borrow, and earn interest
 
 ## 🔗 Useful Links
 

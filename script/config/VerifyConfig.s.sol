@@ -5,13 +5,13 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 // Aave V3 Core imports
-import {PoolAddressesProvider} from "aave-v3-core/contracts/protocol/configuration/PoolAddressesProvider.sol";
-import {Pool} from "aave-v3-core/contracts/protocol/pool/Pool.sol";
-import {PoolConfigurator} from "aave-v3-core/contracts/protocol/pool/PoolConfigurator.sol";
-import {ACLManager} from "aave-v3-core/contracts/protocol/configuration/ACLManager.sol";
-import {AaveOracle} from "aave-v3-core/contracts/misc/AaveOracle.sol";
-import {AaveProtocolDataProvider} from "aave-v3-core/contracts/misc/AaveProtocolDataProvider.sol";
-import {IPoolAddressesProvider} from "aave-v3-core/contracts/interfaces/IPoolAddressesProvider.sol";
+import {PoolAddressesProvider} from "../../src/protocol/configuration/PoolAddressesProvider.sol";
+import {Pool} from "../../src/protocol/pool/Pool.sol";
+import {PoolConfigurator} from "../../src/protocol/pool/PoolConfigurator.sol";
+import {ACLManager} from "../../src/protocol/configuration/ACLManager.sol";
+import {AaveOracle} from "../../src/misc/AaveOracle.sol";
+import {AaveProtocolDataProvider} from "../../src/misc/AaveProtocolDataProvider.sol";
+import {IPoolAddressesProvider} from "../../src/interfaces/IPoolAddressesProvider.sol";
 
 // Utils
 import {BaseScript} from "../utils/BaseScript.sol";
