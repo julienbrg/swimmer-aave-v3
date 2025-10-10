@@ -63,18 +63,19 @@
 | **Mock USD Coin** | USDC | `0x14Ee4343dc75d77446041Be83ae6f3385ccb695A` | 6 | `src/mocks/tokens/MintableERC20.sol` |
 | **Mock Tether USD** | USDT | `0x2D9a93AF809Ea53A90b5aC29e15c66F6e2FDcFb5` | 6 | `src/mocks/tokens/MintableERC20.sol` |
 | **Mock Dai Stablecoin** | DAI | `0x5D51C1e40eDCb36b2Bb207242587d76CF799Eb05` | 18 | `src/mocks/tokens/MintableERC20.sol` |
-| **Mock Wrapped Bitcoin** | WBTC | `0x6353e6A9920C964ae9E485b0B7f1F83dE7403945` | 8 | `src/mocks/tokens/MintableERC20.sol` |
+| **Mock Wrapped Bitcoin** | WBTC | `0x2D9a93AF809Ea53A90b5aC29e15c66F6e2FDcFb5` | 8 | `src/mocks/tokens/MintableERC20.sol` |
 | **Mock Chainlink** | LINK | `0x26D7B0b2852802Fc58d97a0865771318b306BD1C` | 18 | `src/mocks/tokens/MintableERC20.sol` |
 | **Mock Uniswap** | UNI | `0x67ad97dfF0b6234F7E3c7e8E48ef035A4119428f` | 18 | `src/mocks/tokens/MintableERC20.sol` |
 
 ## 🏦 Active Reserves
 
-✅ **2 reserves are currently listed and active:**
+✅ **3 reserves are currently listed and active:**
 
-| Reserve | Token Address | aToken | Stable Debt Token | Variable Debt Token | Strategy |
-|---------|---------------|---------|-------------------|---------------------|----------|
-| **USDC** | `0x14Ee4343dc75d77446041Be83ae6f3385ccb695A` | `0xB9D2724344b8641364151D98F7936df3B757967C` | `0x196eBD89dCbADbfa718b6F074510860ccfAe7dd9` | `0x81868016B15387A8d6baE923b5dA49C4295182d8` | Stablecoin Strategy |
-| **USDT** | `0x2D9a93AF809Ea53A90b5aC29e15c66F6e2FDcFb5` | `0xB9D2724344b8641364151D98F7936df3B757967C` | `0x196eBD89dCbADbfa718b6F074510860ccfAe7dd9` | `0x81868016B15387A8d6baE923b5dA49C4295182d8` | Stablecoin Strategy |
+| Reserve | Token Address | aToken | Stable Debt Token | Variable Debt Token | Strategy | LTV | Liq. Threshold |
+|---------|---------------|---------|-------------------|---------------------|----------|-----|----------------|
+| **USDC** | `0x14Ee4343dc75d77446041Be83ae6f3385ccb695A` | `0xB9D2724344b8641364151D98F7936df3B757967C` | `0x196eBD89dCbADbfa718b6F074510860ccfAe7dd9` | `0x81868016B15387A8d6baE923b5dA49C4295182d8` | Stablecoin Strategy | 80% | 85% |
+| **USDT** | `0x2D9a93AF809Ea53A90b5aC29e15c66F6e2FDcFb5` | `0xB9D2724344b8641364151D98F7936df3B757967C` | `0x196eBD89dCbADbfa718b6F074510860ccfAe7dd9` | `0x81868016B15387A8d6baE923b5dA49C4295182d8` | Stablecoin Strategy | 80% | 85% |
+| **WBTC** | `0x2D9a93AF809Ea53A90b5aC29e15c66F6e2FDcFb5` | `0x2b77f245B2E3074311c16a6566Fc774741e2837B` | `0x395BFa35B24F01B9EC38C44E249850394C3D41be` | `0x212c5b766fCf3Aa190165FAdD3491dd3EB033f3e` | Default Strategy | 70% | 75% |
 
 ### Available but Unlisted Tokens
 
@@ -83,7 +84,6 @@ The following tokens are deployed but not yet listed as reserves:
 | Token | Symbol | Address | Status |
 |-------|---------|---------|---------|
 | **Mock Dai Stablecoin** | DAI | `0x5D51C1e40eDCb36b2Bb207242587d76CF799Eb05` | Ready to list |
-| **Mock Wrapped Bitcoin** | WBTC | `0x6353e6A9920C964ae9E485b0B7f1F83dE7403945` | Ready to list |
 | **Mock Chainlink** | LINK | `0x26D7B0b2852802Fc58d97a0865771318b306BD1C` | Ready to list |
 | **Mock Uniswap** | UNI | `0x67ad97dfF0b6234F7E3c7e8E48ef035A4119428f` | Ready to list |
 
@@ -91,6 +91,9 @@ To list additional reserves:
 ```bash
 # Example: List DAI as a reserve
 source .env && forge script script/config/ListDAI.s.sol:ListDAI --rpc-url $RPC_URL --broadcast -vvv
+
+# List WBTC (already completed)
+source .env && forge script script/config/ListWBTC.s.sol:ListWBTC --rpc-url $RPC_URL --broadcast -vvv
 ```
 
 ## 📁 ABI Compilation Artifacts
@@ -145,7 +148,7 @@ source .env && forge script script/config/ListUSDC.s.sol:ListUSDC --rpc-url $RPC
 **Total Cost**: ~0.0029 ETH on HyperEVM Testnet  
 **Deployment Status**: ✅ **COMPLETE** (100/100 verification score)  
 **Protocol Status**: 🚀 **FULLY OPERATIONAL**  
-**Active Reserves**: ✅ **2 reserves listed** (USDC, USDT)  
+**Active Reserves**: ✅ **3 reserves listed** (USDC, USDT, WBTC)  
 **Ready to Use**: ✅ **Yes** - Users can deposit, borrow, and earn interest
 
 ## 🔗 Useful Links
