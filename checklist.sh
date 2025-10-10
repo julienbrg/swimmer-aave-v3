@@ -67,9 +67,9 @@ if [ -f ".env" ]; then
     
     if [ -n "$PRIVATE_KEY" ]; then
         if [[ "$PRIVATE_KEY" == 0x* ]]; then
-            check_warning "PRIVATE_KEY has 0x prefix (should be removed)"
+            check_passed "PRIVATE_KEY is set (with 0x prefix)"
         else
-            check_passed "PRIVATE_KEY is set (without 0x prefix)"
+            check_warning "PRIVATE_KEY should have 0x prefix (for vm.envUint compatibility)"
         fi
     else
         check_failed "PRIVATE_KEY not set in .env"

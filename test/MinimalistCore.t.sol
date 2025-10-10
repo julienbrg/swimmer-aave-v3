@@ -26,9 +26,9 @@ contract MinimalistCoreTest is Test {
 
     function test_TokenMinting() public {
         uint256 mintAmount = 1000 ether;
-        
+
         token.mint(user, mintAmount);
-        
+
         assertEq(token.balanceOf(user), mintAmount);
         assertEq(token.totalSupply(), mintAmount);
     }
@@ -37,13 +37,13 @@ contract MinimalistCoreTest is Test {
         uint256 mintAmount = 1000 ether;
         uint256 transferAmount = 300 ether;
         address recipient = makeAddr("recipient");
-        
+
         token.mint(user, mintAmount);
-        
+
         vm.startPrank(user);
         token.transfer(recipient, transferAmount);
         vm.stopPrank();
-        
+
         assertEq(token.balanceOf(user), mintAmount - transferAmount);
         assertEq(token.balanceOf(recipient), transferAmount);
     }
@@ -53,19 +53,19 @@ contract MinimalistCoreTest is Test {
         uint256 transferAmount = 300 ether;
         address spender = makeAddr("spender");
         address recipient = makeAddr("recipient");
-        
+
         token.mint(user, mintAmount);
-        
+
         vm.startPrank(user);
         token.approve(spender, transferAmount);
         vm.stopPrank();
-        
+
         assertEq(token.allowance(user, spender), transferAmount);
-        
+
         vm.startPrank(spender);
         token.transferFrom(user, recipient, transferAmount);
         vm.stopPrank();
-        
+
         assertEq(token.balanceOf(user), mintAmount - transferAmount);
         assertEq(token.balanceOf(recipient), transferAmount);
         assertEq(token.allowance(user, spender), 0);
@@ -81,7 +81,7 @@ contract MinimalistCoreTest is Test {
         // Test that DataTypes can be used
         DataTypes.ReserveConfigurationMap memory config;
         assertEq(config.data, 0);
-        
+
         DataTypes.UserConfigurationMap memory userConfig;
         assertEq(userConfig.data, 0);
     }
@@ -89,16 +89,16 @@ contract MinimalistCoreTest is Test {
     function testFuzz_TokenOperations(uint256 mintAmount, uint256 transferAmount) public {
         mintAmount = bound(mintAmount, 1, type(uint128).max);
         transferAmount = bound(transferAmount, 1, mintAmount);
-        
+
         address recipient = makeAddr("recipient");
-        
+
         token.mint(user, mintAmount);
         assertEq(token.balanceOf(user), mintAmount);
-        
+
         vm.startPrank(user);
         token.transfer(recipient, transferAmount);
         vm.stopPrank();
-        
+
         assertEq(token.balanceOf(user), mintAmount - transferAmount);
         assertEq(token.balanceOf(recipient), transferAmount);
         assertEq(token.totalSupply(), mintAmount);
@@ -107,11 +107,11 @@ contract MinimalistCoreTest is Test {
     function testFuzz_TokenApproval(uint256 approvalAmount) public {
         approvalAmount = bound(approvalAmount, 0, type(uint256).max);
         address spender = makeAddr("spender");
-        
+
         vm.startPrank(user);
         token.approve(spender, approvalAmount);
         vm.stopPrank();
-        
+
         assertEq(token.allowance(user, spender), approvalAmount);
     }
 
@@ -119,9 +119,9 @@ contract MinimalistCoreTest is Test {
         uint256 mintAmount = 100 ether;
         uint256 transferAmount = 200 ether; // More than balance
         address recipient = makeAddr("recipient");
-        
+
         token.mint(user, mintAmount);
-        
+
         vm.startPrank(user);
         vm.expectRevert();
         token.transfer(recipient, transferAmount);
@@ -134,13 +134,13 @@ contract MinimalistCoreTest is Test {
         uint256 transferAmount = 400 ether; // More than allowance
         address spender = makeAddr("spender");
         address recipient = makeAddr("recipient");
-        
+
         token.mint(user, mintAmount);
-        
+
         vm.startPrank(user);
         token.approve(spender, approvalAmount);
         vm.stopPrank();
-        
+
         vm.startPrank(spender);
         vm.expectRevert();
         token.transferFrom(user, recipient, transferAmount);

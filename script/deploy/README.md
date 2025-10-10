@@ -6,7 +6,7 @@ This directory contains the deployment scripts for Aave V3.0 protocol on HyperEV
 
 1. **Environment Setup**: Ensure your `.env` file is properly configured:
    ```env
-   PRIVATE_KEY=your_private_key_without_0x_prefix
+   PRIVATE_KEY=0xyour_private_key_with_0x_prefix
    HYPEREVM_TESTNET_RPC_URL=https://rpc.hyperliquid-testnet.xyz/evm
    HYPEREVM_TESTNET_CHAIN_ID=998
    ```
