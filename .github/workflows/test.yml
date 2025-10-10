@@ -31,7 +31,6 @@ jobs:
         run: |
           forge install aave/aave-v3-core
           forge install OpenZeppelin/openzeppelin-contracts
-          forge install foundry-rs/forge-std
 
       - name: Build contracts
         run: |
