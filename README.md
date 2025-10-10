@@ -5,7 +5,8 @@
 
 forge test --fork-url https://rpc.hyperliquid.xyz/evm
 
-
+- [Aave V3 Core repo](https://github.com/aave/aave-v3-core/releases/tag/v1.19.0)
+- [HyperEVM tools](https://hyperliquid.gitbook.io/hyperliquid-docs/builder-tools/hyperevm-tools)
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
