@@ -1,6 +1,7 @@
 # Compiler files
 cache/
 out/
+!out/Pool.sol/Pool.json
 
 # Dependencies
 lib/
